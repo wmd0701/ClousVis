@@ -8,7 +8,7 @@ By now you should have all Files from the Unity Project with some erros due to m
 What I did not include is:
 
 - clw.data
-	This File i created in vtk, using the script provided in the folder "VTKScripts" that is included in this project.
+	This File i created in vtk, using the script provided in the folder "VTKScripts" that is included in the github folder.
 	Just run it, and it should create a 1.3GB binary file on your Desktop called clw.data (in Windows at least).
 	Then import (drag and drop) this file into the folder "ImportedData" in the unity Project.
 

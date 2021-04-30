@@ -1,2 +1,7 @@
+CloudVis/Library/
+CloudVis/Logs/
+CloudVis/obj/
+CloudVis/UserSettings/
+
 CloudVis/Assets/clw_normalized.asset
 CloudVis/Assets/ImportedData/clw.data
