@@ -20,11 +20,11 @@ namespace UnityEngine.Rendering
         /// <summary>
         /// Rotation speed when using the mouse.
         /// </summary>
-        public float m_LookSpeedMouse = 3.0f;
+        public float m_LookSpeedMouse = 2.0f;
         /// <summary>
         /// Movement speed.
         /// </summary>
-        public float m_MoveSpeed = 300.0f;
+        public float m_MoveSpeed = 500.0f;
         /// <summary>
         /// Value added to the speed when incrementing.
         /// </summary>
@@ -32,7 +32,7 @@ namespace UnityEngine.Rendering
         /// <summary>
         /// Scale factor of the turbo mode.
         /// </summary>
-        public float m_Turbo = 7.0f;
+        public float m_Turbo = 5.0f;
         /// <summary>
         /// Simplify operation on camera rotation
         /// </summary>
@@ -199,9 +199,12 @@ namespace UnityEngine.Rendering
                 float moveSpeed = Time.deltaTime * m_MoveSpeed;
                 if (fire1 || leftShiftBoost && leftShift)
                     moveSpeed *= m_Turbo;
-                transform.position += transform.forward * moveSpeed * inputVertical;
+                if (Input.GetKey("space"))
+                    transform.position += Vector3.up * moveSpeed * inputVertical; // inputYAxis
+                else
+                    transform.position += transform.forward * moveSpeed * inputVertical;
                 transform.position += transform.right * moveSpeed * inputHorizontal;
-                transform.position += Vector3.up * moveSpeed * inputYAxis;
+                
             }
         }
     }
