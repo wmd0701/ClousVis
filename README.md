@@ -8,7 +8,7 @@ See README in CloudVis directory for installation instructions
 
 ## Movement
 - forward : keyboard w / up arrow
-- downard : keyboard s / down arrow
+- backward : keyboard s / down arrow
 - left: keyboard a / left arrow
 - right: keyboard d / right arrow
 - up: keyboard q
