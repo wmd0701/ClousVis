@@ -182,6 +182,7 @@ namespace UnityEngine.Rendering
             }
 
             bool moved = inputRotateAxisX != 0.0f || inputRotateAxisY != 0.0f || inputVertical != 0.0f || inputHorizontal != 0.0f || inputYAxis != 0.0f;
+            float moveSpeed = Time.deltaTime * m_MoveSpeed;
             if (moved)
             {
                 float rotationX = transform.localEulerAngles.x;
@@ -196,16 +197,19 @@ namespace UnityEngine.Rendering
 
                 transform.localRotation = Quaternion.Euler(newRotationX, newRotationY, transform.localEulerAngles.z);
 
-                float moveSpeed = Time.deltaTime * m_MoveSpeed;
                 if (fire1 || leftShiftBoost && leftShift)
                     moveSpeed *= m_Turbo;
-                if (Input.GetKey("space"))
-                    transform.position += Vector3.up * moveSpeed * inputVertical; // inputYAxis
-                else
-                    transform.position += transform.forward * moveSpeed * inputVertical;
+                
+                transform.position += transform.forward * moveSpeed * inputVertical;
                 transform.position += transform.right * moveSpeed * inputHorizontal;
                 
             }
+
+            // movement in Y axis. For some unknown reason, the original FreeCamera code should support this but not in reality
+            if (Input.GetKey("q"))
+                transform.position += Vector3.up * moveSpeed; // inputYAxis
+            if (Input.GetKey("e"))
+                transform.position += Vector3.down * moveSpeed; // inputYAxis
         }
     }
 }
