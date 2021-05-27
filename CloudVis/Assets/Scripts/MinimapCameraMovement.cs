@@ -5,7 +5,7 @@ using UnityEngine;
 public class MinimapCameraMovement : MonoBehaviour
 {
 
-    public Camera m_MainCamera;
+    private Camera m_MainCamera;
 
     // Start is called before the first frame update
     void Start()
