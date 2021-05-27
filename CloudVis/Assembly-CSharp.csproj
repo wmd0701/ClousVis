@@ -62,6 +62,7 @@
     <Compile Include="Assets\Scripts\Slicer.cs" />
     <Compile Include="Assets\Scripts\FreeCamera_modified.cs" />
     <Compile Include="Assets\Scripts\CloudManager.cs" />
+    <Compile Include="Assets\Scripts\MinimapCameraMovement.cs" />
   </ItemGroup>
   <ItemGroup>
      <None Include="Assets\Scripts\CloudShader.shader" />
