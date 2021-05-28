@@ -57,7 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\ImportedData\TextureCreator.cs" />
-    <Compile Include="Assets\Scripts\HeightmapFromTexture.cs" />
+    <Compile Include="Assets\Terrain\HeightmapFromTexture.cs" />
     <Compile Include="Assets\Scripts\MinimapCameraMovement.cs" />
     <Compile Include="Assets\DebugStuff\VolumeBoundary.cs" />
     <Compile Include="Assets\Scripts\Slicer.cs" />
