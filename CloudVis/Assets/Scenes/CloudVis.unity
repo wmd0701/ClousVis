@@ -612,7 +612,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cloudShader: {fileID: 4800000, guid: b93d27a9de7b0554b9ce9fe7ff0664c3, type: 3}
-  cloudTexture: {fileID: 11700000, guid: 3413eece8e15d644a87169388a8220a8, type: 2}
+  cloudTexture: {fileID: 11700000, guid: 4424eb5aa93f5e842870a7e1f83ef04d, type: 2}
 --- !u!1 &1213043320
 GameObject:
   m_ObjectHideFlags: 0
