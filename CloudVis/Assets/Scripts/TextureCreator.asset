@@ -12,10 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 101b16eea5b80da4688319f38cb39929, type: 3}
   m_Name: TextureCreator
   m_EditorClassIdentifier: 
-  sizeX: 1429
-  sizeY: 150
-  sizeZ: 1556
   format: 18
   wrapMode: 0
-  sourceName: clw
-  TextureName: clw_normalized
+  sourceName: pres
+  TextureName: pres_normalized
