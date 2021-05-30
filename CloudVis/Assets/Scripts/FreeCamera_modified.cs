@@ -25,6 +25,7 @@ namespace UnityEngine.Rendering
         /// Movement speed.
         /// </summary>
         public float m_MoveSpeed = 500.0f;
+        public float m_MoveSpeedVertical = 120.0f;
         /// <summary>
         /// Value added to the speed when incrementing.
         /// </summary>
@@ -37,6 +38,9 @@ namespace UnityEngine.Rendering
         /// Simplify operation on camera rotation
         /// </summary>
         public bool m_SimpleRotationOperation = true;
+
+        public float m_MaxHeight = 5000f;
+        public float m_MinHeight = 30f;
 
         public string hint = "Ctrl to turbo camera";
 
@@ -183,6 +187,8 @@ namespace UnityEngine.Rendering
 
             bool moved = inputRotateAxisX != 0.0f || inputRotateAxisY != 0.0f || inputVertical != 0.0f || inputHorizontal != 0.0f || inputYAxis != 0.0f;
             float moveSpeed = Time.deltaTime * m_MoveSpeed;
+            float moveSpeedVertical = Time.deltaTime * m_MoveSpeedVertical;
+
             if (moved)
             {
                 float rotationX = transform.localEulerAngles.x;
@@ -198,8 +204,11 @@ namespace UnityEngine.Rendering
                 transform.localRotation = Quaternion.Euler(newRotationX, newRotationY, transform.localEulerAngles.z);
 
                 if (fire1 || leftShiftBoost && leftShift)
+                {
                     moveSpeed *= m_Turbo;
-                
+                    moveSpeedVertical *= m_Turbo;
+                }
+
                 transform.position += transform.forward * moveSpeed * inputVertical;
                 transform.position += transform.right * moveSpeed * inputHorizontal;
                 
@@ -207,9 +216,14 @@ namespace UnityEngine.Rendering
 
             // movement in Y axis. For some unknown reason, the original FreeCamera code should support this but not in reality
             if (Input.GetKey("q"))
-                transform.position += Vector3.up * moveSpeed; // inputYAxis
+                transform.position += Vector3.up * moveSpeedVertical; // inputYAxis
             if (Input.GetKey("e"))
-                transform.position += Vector3.down * moveSpeed; // inputYAxis
+                transform.position += Vector3.down * moveSpeedVertical; // inputYAxis
+
+            // clamp height
+            Vector3 currPosition = transform.position;
+            currPosition.y = Mathf.Clamp(currPosition.y, m_MinHeight, m_MaxHeight);
+            transform.position = currPosition;
         }
     }
 }

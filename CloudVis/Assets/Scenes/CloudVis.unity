@@ -781,9 +781,12 @@ MonoBehaviour:
   m_LookSpeedController: 120
   m_LookSpeedMouse: 2
   m_MoveSpeed: 500
+  m_MoveSpeedVertical: 120
   m_MoveSpeedIncrement: 2.5
   m_Turbo: 7
   m_SimpleRotationOperation: 1
+  m_MaxHeight: 5000
+  m_MinHeight: 30
   hint: Ctrl to turbo camera
 --- !u!114 &963194230
 MonoBehaviour:
@@ -836,7 +839,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -160, y: -160}
+  m_AnchoredPosition: {x: -80, y: -80}
   m_SizeDelta: {x: 320, y: 320}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1213043322
@@ -1281,6 +1284,7 @@ MonoBehaviour:
   lon_max: 14.496
   lat_min: 47.5
   lat_max: 54.4975
+  ht_min: 183
 --- !u!114 &1900681877
 MonoBehaviour:
   m_ObjectHideFlags: 0

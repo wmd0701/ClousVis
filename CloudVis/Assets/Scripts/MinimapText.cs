@@ -10,6 +10,7 @@ public class MinimapText : MonoBehaviour
     public float lon_max = 14.496f;
     public float lat_min = 47.5f;
     public float lat_max = 54.4975f;
+    public float ht_min = 183.0f;
     private Camera m_MainCamera;
     private Text minimapText;
     private float x_range;
@@ -35,6 +36,6 @@ public class MinimapText : MonoBehaviour
         float lat = (m_MainCamera.transform.position.z / z_range + 0.5f) * lat_range + lat_min;
         minimapText.text = "lon: " + lon.ToString("F2") + "\n" + 
                            "lat: " + lat.ToString("F2") + "\n" + 
-                           "ht: " + m_MainCamera.transform.position.y.ToString("F2");
+                           "ht: " + (m_MainCamera.transform.position.y * 100f + ht_min).ToString("F2") + " m";
     }
 }

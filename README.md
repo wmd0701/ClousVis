@@ -13,4 +13,4 @@ See README in CloudVis directory for installation instructions
 - right: keyboard d / right arrow
 - up: keyboard q
 - down : keyboard e
-- speed up: keyboard CTRL(English layout) / STRG(German layout) / mouse left click
+- speed up: keyboard CTRL(English layout) / STRG(German layout) / Shift / Mouse Left Click
