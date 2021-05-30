@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.45130545, g: 0.50018173, b: 0.56902987, a: 1}
+  m_IndirectSpecularColor: {r: 0.45130605, g: 0.5001825, b: 0.5690304, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -388,7 +388,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 538620571}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1908188348}
@@ -606,13 +606,13 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b510084c4ac6d104aa019caf4846d20a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   cloudShader: {fileID: 4800000, guid: b93d27a9de7b0554b9ce9fe7ff0664c3, type: 3}
-  cloudTexture: {fileID: 11700000, guid: 4424eb5aa93f5e842870a7e1f83ef04d, type: 2}
+  cloudTexture: {fileID: 11700000, guid: 55c6d3534ffb0be458e9037d19bb31df, type: 2}
 --- !u!1 &1213043320
 GameObject:
   m_ObjectHideFlags: 0
