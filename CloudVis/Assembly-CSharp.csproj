@@ -64,6 +64,8 @@
     <Compile Include="Assets\Scripts\FreeCamera_modified.cs" />
     <Compile Include="Assets\Scripts\CloudManager.cs" />
     <Compile Include="Assets\Scripts\MinimapText.cs" />
+    <Compile Include="Assets\Scripts\ToggleHint.cs" />
+    <Compile Include="Assets\Scripts\ControllHint.cs" />
   </ItemGroup>
   <ItemGroup>
      <None Include="Assets\Scripts\CloudShader.shader" />
