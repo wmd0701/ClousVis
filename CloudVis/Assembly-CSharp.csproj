@@ -38,6 +38,7 @@
   <ItemGroup>
      <Compile Include="Assets\Scripts\TextureCreator.cs" />
      <Compile Include="Assets\Terrain\HeightmapFromTexture.cs" />
+     <Compile Include="Assets\Scripts\VectorFieldVisualization\VectorFieldVisualizer.cs" />
      <Compile Include="Assets\Scripts\ControllHint.cs" />
      <Compile Include="Assets\Scripts\MinimapCameraMovement.cs" />
      <Compile Include="Assets\DebugStuff\VolumeBoundary.cs" />
@@ -46,7 +47,6 @@
      <Compile Include="Assets\Scripts\CloudManager.cs" />
      <Compile Include="Assets\Scripts\MinimapText.cs" />
      <Compile Include="Assets\Scripts\ToggleHint.cs" />
-     <Compile Include="Assets\Scripts\VectorFieldVisualization\VectorFieldVisualizer.cs" />
      <None Include="Assets\Scripts\CloudShader.shader" />
      <None Include="Assets\Scripts\VectorFieldVisualization\VectorFieldVisualizationCompute.compute" />
      <None Include="Assets\DebugStuff\BlueRedGridShader.shader" />

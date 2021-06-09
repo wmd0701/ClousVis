@@ -314,17 +314,51 @@ public class Slicer : MonoBehaviour
 		//Gizmos.DrawSphere(transform.position + transform.forward * rayDistance, 2.5f);
 		Gizmos.DrawCube(cubecenter, cubeSize);
 
+		// Show the corners.
+		Gizmos.color = Color.blue;
+		Vector3[] corners = GetSliceCorners();
+		foreach (Vector3 corner in corners) {
+			Gizmos.DrawCube(corner, 10.0f * Vector3.one * multiplier);
+		}
+		Gizmos.color = Color.green;
+
 		Gizmos.color = new Color(0.0f, 1.0f, 0.0f);
 
-		for(int y = yRange.x; y <= yRange.y; y+=2)
+		for (int y = yRange.x; y <= yRange.y; y+=2)
         {
-			for(int i = 0; i < points.Length; i++)
+			for (int i = 0; i < points.Length; i++)
 			{
-				Vector3 center = new Vector3(points[i].x * 5.25122463f * multiplier + VolumeBoundaryMin.x + 5.25122463f * multiplier / 2.0f, 
-											 y * 1.3211333f * multiplier + VolumeBoundaryMin.y + 1.3211333f * multiplier / 2.0f, 
-											 points[i].y * 5.00064267f * multiplier + VolumeBoundaryMin.z + 5.00064267f * multiplier / 2.0f);
+				Vector3 center = Generate3DPoint(y, points[i]);
 				Gizmos.DrawSphere(center, 1.5f * multiplier);
 			}
         }
 	}
+
+	/**
+	 * Takes a point generated on a Breshenham-line and generates a corresponding 3D point in world space.
+	 * @param y: Vertical offset.
+	 * @param point: Point on Bresenham-line.
+	 */
+	private Vector3 Generate3DPoint(float y, Vector2 point) {
+		float xComp = point.x * 5.25122463f * multiplier + VolumeBoundaryMin.x + 5.25122463f * multiplier / 2.0f;
+		float yComp = y * 1.3211333f * multiplier + VolumeBoundaryMin.y + 1.3211333f * multiplier / 2.0f;
+		float zComp = point.y * 5.00064267f * multiplier + VolumeBoundaryMin.z + 5.00064267f * multiplier / 2.0f;
+		return new Vector3(xComp, yComp, zComp);
+	}
+
+	/**
+	 * Returns the corner points of the current slice.
+	 * @return: An Vector3[] of size 4 where each entry is a corner point.
+	 */
+	public Vector3[] GetSliceCorners() {
+		float yMin = yRange.x;
+		float yMax = yRange.y;
+		Vector3[] corners = new Vector3[4];
+		corners[0] = Generate3DPoint(yMin, points[0]);
+		corners[1] = Generate3DPoint(yMin, points[points.Length - 1]);
+		corners[2] = Generate3DPoint(yMax, points[0]);
+		corners[3] = Generate3DPoint(yMax, points[points.Length - 1]);
+		return corners;
+	}
+
 }
