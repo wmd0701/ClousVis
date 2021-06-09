@@ -323,7 +323,7 @@ public class Slicer : MonoBehaviour
 		Gizmos.color = Color.green;
 
 		Gizmos.color = new Color(0.0f, 1.0f, 0.0f);
-
+		/*
 		for (int y = yRange.x; y <= yRange.y; y+=2)
         {
 			for (int i = 0; i < points.Length; i++)
@@ -332,6 +332,7 @@ public class Slicer : MonoBehaviour
 				Gizmos.DrawSphere(center, 1.5f * multiplier);
 			}
         }
+		*/
 	}
 
 	/**
