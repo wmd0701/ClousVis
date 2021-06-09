@@ -4,4 +4,5 @@ CloudVis/obj/
 CloudVis/UserSettings/
 
 CloudVis/Assets/clw_normalized.asset
-CloudVis/Assets/ImportedData/clw.data
+CloudVis/Assets/ImportedData/clw.dataTemp/*
+CloudVis/Temp/*
