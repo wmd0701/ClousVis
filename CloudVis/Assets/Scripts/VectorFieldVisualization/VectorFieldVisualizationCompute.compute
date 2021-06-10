@@ -1,6 +1,9 @@
 // Each #kernel tells which function to compile; you can have many kernels
 #pragma kernel Iterator
-// #pragma kernel ReconstructStreamLine
+#pragma kernel Reconstructor
+
+// Utilities.
+#include "UnityCG.cginc"
 
 // Dimensions of the texture.
 static const float xDim = 7504.0f;
@@ -15,11 +18,10 @@ static const float maxV = 50.6398f;
 static const float minW = -11.276f;
 static const float maxW = 15.765f;
 
-// Buffer holding the initial positions of the particles.
-RWStructuredBuffer<float3> seedBuff;
-
-// Buffer holding the calculated positions for each trajectory.
-RWStructuredBuffer<float3> streamlineBuff;
+RWStructuredBuffer<float3> seedBuffer;          // Buffer holding the initial positions of the particles.
+RWStructuredBuffer<float3> streamlineBuffer;    // Buffer holding the calculated positions for each trajectory.
+RWStructuredBuffer<float3> normalBuffer;        // Buffer holding the normals of the streamlines.
+RWStructuredBuffer<float3> tangentBuffer;       // Buffern holding the tangent lines of the streamlines.
 
 // Texture holding the vectorfield.
 Texture3D<float4> vectorfieldTexture;
@@ -61,15 +63,49 @@ float3 RK4Step(float3 x, float h) {
     return x;
 }
 
-[numthreads(64,1,1)]
+[numthreads(64, 1, 1)]
 void Iterator(uint id: SV_DispatchThreadID) {
     
     // Get initial position and store it.
-    float3 position = seedBuff[id];
+    float3 position = seedBuffer[id];
 
     for (uint i = 0; i < iteratorSteps; i++) {
-        streamlineBuff[id + i * maxStreamlineCount] = position;
+        streamlineBuffer[id + i * maxStreamlineCount] = position;
         position = RK4Step(position, stepSize);
     }
+}
+
+[numthreads(64, 1, 1)]
+void Reconstructor(uint id: SV_DispatchThreadID) {
+
+    // Reconstruct first point.
+    float3 p0 = streamlineBuffer[id];
+    float3 p1 = streamlineBuffer[id + maxStreamlineCount];
+    float3 t0 = normalize(p1 - p0);
+    float3 b0 = cross(t0, normalize(p0));
+    float3 n0 = cross(b0, t0);
+    tangentBuffer[id] = t0;
+    normalBuffer[id] = n0;
+
+    // Reconstruct remaining streamline except last position.
+    for (uint i = 1; i < iteratorSteps - 1; i++) {
+        uint idx = id + i * maxStreamlineCount;
+        float p0 = streamlineBuffer[idx - maxStreamlineCount];
+        float p2 = streamlineBuffer[idx + maxStreamlineCount];
+        float t1 = normalize(p2 - p0);
+        float n1 = normalize(cross(b0, t1));
+        tangentBuffer[idx] = t1;
+        normalBuffer[idx] = n1;
+        b0 = cross(t1, n1);
+    }
+
+    // Reconstruct last point.
+    uint idx = id + (iteratorSteps - 1) * maxStreamlineCount;
+    p0 = streamlineBuffer[idx - maxStreamlineCount];
+    p1 = streamlineBuffer[idx];
+    float3 t1 = normalize(p1 - p0);
+    float3 n1 = normalize(cross(b0, t1));
+    tangentBuffer[idx] = t1;
+    normalBuffer[idx] = n1;
 }
 

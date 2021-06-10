@@ -18,9 +18,11 @@ public class VectorFieldVisualizer : MonoBehaviour {
     private Slicer slicer;                  // Slicer instance to get slice plane.
     private float maxStepDist;              // Maximal distance between two streamline-points (used for coloring).
     private float minStepDist;              // Minimal distance between tw0 streamline-points (used for coloring).
-    private ComputeBuffer seedBuff;         // Buffer holding the seedpoints for the streamlines in each frame (GPU).
+    private ComputeBuffer seedBuffer;       // Buffer holding the seedpoints for the streamlines in each frame (GPU).
+    private ComputeBuffer streamlineBuffer; // Buffer holding the positions of the streamlines (GPU).
+    private ComputeBuffer normalBuffer;     // Buffer for the normals of the streamlines.
+    private ComputeBuffer tangentBuffer;    // Buffer for the tangents of the streamlines.
     private Vector3[] seedPoints;           // Array holding the seedpoints (CPU).
-    private ComputeBuffer streamlineBuff;   // Buffer holding the positions of the streamlines (GPU).
     private Vector3[] streamlinePoints;     // Array holding the positions of the streamlines (CPU).    
     private int groupSize = 64;             // Number of threads run in a single group.
     private int groupCount;                 // Number of groups requires to calculate <maxStreamlineCount> streamlines.
@@ -29,10 +31,12 @@ public class VectorFieldVisualizer : MonoBehaviour {
 
     // Precomputation of the shader properties.
     static readonly int
-        seedBuffId = Shader.PropertyToID("seedBuff"),
+        seedBufferId = Shader.PropertyToID("seedBuffer"),
+        streamlineBufferId = Shader.PropertyToID("streamlineBuffer"),
+        tangentBufferId = Shader.PropertyToID("tangentBuffer"),
+        normalBufferId = Shader.PropertyToID("normalBufferId"),
         maxStreamlineCountId = Shader.PropertyToID("maxStreamlineCount"),
         streamlineCountId = Shader.PropertyToID("streamlineCount"),
-        streamlineBuffId = Shader.PropertyToID("streamlineBuff"),
         iteratorStepsId = Shader.PropertyToID("iteratorSteps"),
         stepSizeId = Shader.PropertyToID("stepSize"),
         vectorfieldTextureId = Shader.PropertyToID("vectorfieldTexture");
@@ -58,7 +62,7 @@ public class VectorFieldVisualizer : MonoBehaviour {
          * We make this compromise since re-allocating the buffer at each update to represent the variable number of
          * streamlines is costly.
          */
-        seedBuff = new ComputeBuffer(maxStreamlineCount, 4 * 3);
+        seedBuffer = new ComputeBuffer(maxStreamlineCount, 4 * 3);
 
         /**
          * Initializing the buffer holding the positions of the streamlines.
@@ -66,16 +70,20 @@ public class VectorFieldVisualizer : MonoBehaviour {
          * step of the iterator for all streamlines.
          * As before, we might allocate more memory than needed for the sake of speed.
          */
-        streamlineBuff = new ComputeBuffer(maxStreamlineCount * iteratorSteps, 4 * 3);
+        streamlineBuffer = new ComputeBuffer(maxStreamlineCount * iteratorSteps, 4 * 3);
+
+        // Buffers holding tangents and normals, same layout and size as <streamlineBuffer>.
+        tangentBuffer = new ComputeBuffer(maxStreamlineCount * iteratorSteps, 4 * 3);
+        normalBuffer = new ComputeBuffer(maxStreamlineCount * iteratorSteps, 4 * 3);
     }
 
     void OnDisable() {
 
         // Deallocating resources to prevent memory leaks.
-        seedBuff.Release();
-        seedBuff = null;
-        streamlineBuff.Release();
-        streamlineBuff = null;
+        seedBuffer.Release();
+        seedBuffer = null;
+        streamlineBuffer.Release();
+        streamlineBuffer = null;
     }
 
     // Update is called once per frame
@@ -91,13 +99,13 @@ public class VectorFieldVisualizer : MonoBehaviour {
         int streamlineCount = shape.Item1 * shape.Item2;
 
         // Update for GPU.
-        UpdateFunctionOnGPU(streamlineCount);
+        InitializeIterator(streamlineCount);
 
         // Set the initial points.
-        seedBuff.SetData(seedPoints);
+        seedBuffer.SetData(seedPoints);
 
         // Get data after GPU-calculation.
-        streamlineBuff.GetData(streamlinePoints);
+        streamlineBuffer.GetData(streamlinePoints);
 
         // Draw streamlines for debugging.
         DrawStreamlinesDebugSimple(ref streamlinePoints, 
@@ -214,15 +222,23 @@ public class VectorFieldVisualizer : MonoBehaviour {
         return new Vector3(vec.x, vec.z, vec.y);
     }
 
-    void UpdateFunctionOnGPU(int streamlineCount) {
+    void InitializeIterator(int streamlineCount) {
         int kernelId = computeShader.FindKernel("Iterator");
         computeShader.SetInt(maxStreamlineCountId, maxStreamlineCount);
         computeShader.SetInt(streamlineCountId, streamlineCount);
         computeShader.SetInt(iteratorStepsId, iteratorSteps);
         computeShader.SetFloat(stepSizeId, stepSize);
         computeShader.SetTexture(kernelId, vectorfieldTextureId, vectorfieldTexture, 0);
-        computeShader.SetBuffer(kernelId, streamlineBuffId, streamlineBuff);
-        computeShader.SetBuffer(kernelId, seedBuffId, seedBuff);
+        computeShader.SetBuffer(kernelId, streamlineBufferId, streamlineBuffer);
+        computeShader.SetBuffer(kernelId, seedBufferId, seedBuffer);
+        computeShader.Dispatch(kernelId, groupCount, 1, 1);
+    }
+
+    void InitializeReconstructor(int streamlineCount) {
+        int kernelId = computeShader.FindKernel("Reconstructor");
+        computeShader.SetBuffer(kernelId, streamlineBufferId, streamlineBuffer);
+        computeShader.SetBuffer(kernelId, tangentBufferId, tangentBuffer);
+        computeShader.SetBuffer(kernelId, normalBufferId, normalBuffer);
         computeShader.Dispatch(kernelId, groupCount, 1, 1);
     }
 }
