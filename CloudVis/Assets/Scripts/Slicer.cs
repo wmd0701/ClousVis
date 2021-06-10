@@ -95,6 +95,7 @@ public class Slicer : MonoBehaviour
 			i++;
 		}
 	}
+
 	Vector2Int[] BresenHamLine(int xs, int ys, int xe, int ye)
     {
 		int xdiff = Mathf.Abs(xe - xs);
@@ -115,7 +116,6 @@ public class Slicer : MonoBehaviour
 
 		return pointsOnLine;
     }
-
 
 	// Update which voxel data to draw once per frame...
 	void Update()
@@ -142,9 +142,9 @@ public class Slicer : MonoBehaviour
 			float halfFrustumHeight = FrustumHeight * 0.4f;
 			float halfFrustumWidth = FrustumWidth * 0.4f;
 
-			Vector3Int centerVoxel = new Vector3Int((int)Mathf.Floor(relViewHitPos.x / 5.25122463f), 
-													(int)Mathf.Floor(relViewHitPos.y / 1.3211333f), 
-													(int)Mathf.Floor(relViewHitPos.z / 5.00064267f));
+			Vector3Int centerVoxel = new Vector3Int((int) Mathf.Floor(relViewHitPos.x / 5.25122463f), 
+													(int) Mathf.Floor(relViewHitPos.y / 1.3211333f), 
+													(int) Mathf.Floor(relViewHitPos.z / 5.00064267f));
 
 			if (transform.rotation.eulerAngles.x < 45.0f && transform.rotation.eulerAngles.x > -45.0f) // use vertical slicing...
             {
@@ -186,12 +186,12 @@ public class Slicer : MonoBehaviour
 					maxRange /= 2;
 					multiplier *= 2;
 				}
-				xMin = (int)Mathf.Floor(xMin / multiplier);
-				xMax = (int)Mathf.Ceil(xMax / multiplier);
-				yMin = (int)Mathf.Floor(yMin / multiplier);
-				yMax = (int)Mathf.Ceil(yMax / multiplier);
-				zMin = (int)Mathf.Floor(zMin / multiplier);
-				zMax = (int)Mathf.Ceil(zMax / multiplier);
+				xMin = (int) Mathf.Floor(xMin / multiplier);
+				xMax = (int) Mathf.Ceil(xMax / multiplier);
+				yMin = (int) Mathf.Floor(yMin / multiplier);
+				yMax = (int) Mathf.Ceil(yMax / multiplier);
+				zMin = (int) Mathf.Floor(zMin / multiplier);
+				zMax = (int) Mathf.Ceil(zMax / multiplier);
 				//Debug.Log((xMax - xMin + 1) * (zMax - zMin + 1));
 
 				yRange = new Vector2Int(yMin, yMax);
@@ -316,13 +316,9 @@ public class Slicer : MonoBehaviour
 
 		// Show the corners.
 		Gizmos.color = Color.blue;
-		Vector3[] corners = GetSliceCorners();
-		foreach (Vector3 corner in corners) {
-			Gizmos.DrawCube(corner, 10.0f * Vector3.one * multiplier);
-		}
 		Gizmos.color = Color.green;
-
 		Gizmos.color = new Color(0.0f, 1.0f, 0.0f);
+		
 		/*
 		for (int y = yRange.x; y <= yRange.y; y+=2)
         {
