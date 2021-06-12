@@ -1,5 +1,3 @@
-// Swarm - Special renderer that draws a swarm of swirling/crawling lines.
-// https://github.com/keijiro/Swarm
 Shader "StreamTubeShader"
 {
     Properties

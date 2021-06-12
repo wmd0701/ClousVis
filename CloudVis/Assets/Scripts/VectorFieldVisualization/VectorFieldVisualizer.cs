@@ -173,6 +173,17 @@ public class VectorFieldVisualizer : MonoBehaviour {
         // Reconstruct streamlines.
         InitializeReconstructor();
 
+        // For debugging, retrieve normal data and display it at the corresponding vertices.
+        Vector3[] normalArray = new Vector3[maxStreamlineCount * iteratorSteps];
+        normalBuffer.GetData(normalArray);
+        DrawStreamlineNormalsDebug(ref streamlinePoints,
+                                   ref normalArray,
+                                   iteratorSteps,
+                                   maxStreamlineCount,
+                                   streamlineCount,
+                                   volumeBoundaryMin,
+                                   10.0f);
+
         // Initialize tube shader.
         InitializeTubeShader(streamlineCount);
 
@@ -277,16 +288,39 @@ public class VectorFieldVisualizer : MonoBehaviour {
                                     int iteratorSteps, 
                                     int maxStreamlineCount, 
                                     int streamlineCount,
-                              Vector3 volumeBoundaryMin) {
+                                    Vector3 volumeBoundaryMin) {
         for (int i = 0; i < streamlineCount; i++) {
             for (int j = 1; j < iteratorSteps; j++) {
                 Vector3 last = SwapYZ(positions[i + (j - 1) * maxStreamlineCount]) + volumeBoundaryMin;
                 Vector3 curr = SwapYZ(positions[i + j * maxStreamlineCount]) + volumeBoundaryMin;
-                float distance = Vector3.Magnitude(last - curr);
                 float t = (float) i / streamlineCount;
                 Debug.DrawLine(last, curr, gradient.Evaluate(Mathf.Min(t, 1.0f)));
             }
         }
+    }
+
+    /**
+     * Debugging normal directions.
+     */
+    void DrawStreamlineNormalsDebug(ref Vector3[] positions,
+                                    ref Vector3[] normals,
+                                    int iteratorSteps,
+                                    int maxStreamlineCount,
+                                    int streamlineCount,
+                                    Vector3 volumeBoundaryMin,
+                                    float normalMultiplier) {
+        for (int i = 0; i < streamlineCount; i++) {
+            for (int j = 0; j < iteratorSteps; j++) {
+                Vector3 p = SwapYZ(positions[i + j * maxStreamlineCount]) + volumeBoundaryMin;
+                Vector3 n = SwapYZ(normals[i + j * maxStreamlineCount]);
+                float t = (float) j / iteratorSteps;
+                Debug.DrawLine(p, p + normalMultiplier * n, gradient.Evaluate(t));
+                if (i == 0) {
+                    Debug.Log("Point: " + p);
+                    Debug.Log("Point and normal: " + (p + n));
+                }
+            }
+        }  
     }
 
     /**
