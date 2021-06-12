@@ -160,7 +160,7 @@ public class VectorFieldVisualizer : MonoBehaviour {
         InitializeIterator(streamlineCount);
 
         // Get data after GPU-calculation.
-        streamlineBuffer.GetData(streamlinePoints);
+        // streamlineBuffer.GetData(streamlinePoints);
 
         // Draw streamlines for debugging.
         /*
@@ -191,7 +191,6 @@ public class VectorFieldVisualizer : MonoBehaviour {
         InitializeTubeShader(streamlineCount);
 
         // Draw tubes.
-        Debug.Log(template.mesh.name);
         Graphics.DrawMeshInstancedIndirect(mesh:template.mesh,
                                            submeshIndex:0,
                                            material:material,
@@ -315,10 +314,6 @@ public class VectorFieldVisualizer : MonoBehaviour {
                 Vector3 n = SwapYZ(normals[i + j * maxStreamlineCount]);
                 float t = (float) j / iteratorSteps;
                 Debug.DrawLine(p, p + normalMultiplier * n, gradient.Evaluate(t));
-                if (i == 0) {
-                    Debug.Log("Point: " + p);
-                    Debug.Log("Normal: " + n);
-                }
             }
         }  
     }
@@ -376,7 +371,6 @@ public class VectorFieldVisualizer : MonoBehaviour {
         computeShader.SetBuffer(kernelId, extremalLengthBufferId, extremalLenBuffer);
         computeShader.SetFloat(minLenId, float.MaxValue);
         computeShader.SetFloat(maxLenId, 0.0f);
-        Debug.Log("In InitializeReconstructor");
         computeShader.Dispatch(kernelId, groupCount, 1, 1);
     }
 
