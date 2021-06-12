@@ -56,6 +56,7 @@ public class VectorFieldVisualizer : MonoBehaviour {
         vectorfieldTextureId = Shader.PropertyToID("vectorfieldTexture"),
         minLenId = Shader.PropertyToID("minLen"),
         maxLenId = Shader.PropertyToID("maxLen"),
+        volumeBoundaryMinId = Shader.PropertyToID("volumeBoundaryMin"),
 
         // IDs for the tube shader.
         _GradientColorsId = Shader.PropertyToID("_GradientColors"),
@@ -122,7 +123,7 @@ public class VectorFieldVisualizer : MonoBehaviour {
         // Buffers holding tangents and normals, same layout and size as <streamlineBuffer>.
         tangentBuffer = new ComputeBuffer(maxStreamlineCount * iteratorSteps, 4 * 3);
         normalBuffer = new ComputeBuffer(maxStreamlineCount * iteratorSteps, 4 * 3);
-        segmentLengthBuffer = new ComputeBuffer(maxStreamlineCount * iteratorSteps, 4 * 3);
+        segmentLengthBuffer = new ComputeBuffer(maxStreamlineCount * iteratorSteps, 4);
         gradientColors = new ComputeBuffer(8, 4 * 3);
         extremalLenBuffer = new ComputeBuffer(2, 4);
     }
@@ -147,16 +148,16 @@ public class VectorFieldVisualizer : MonoBehaviour {
         Vector3[] corners = slicer.GetSliceCorners();
 
         // Generate seed-points.
-        (int, int) shape = GenerateGridSeedPoints(corners, ref seedPoints, displacement, volumeBoundaryMin);
+        (int, int) shape = GenerateGridSeedPoints(corners, ref seedPoints, displacement);
 
         // Actual number of streamlines in this frame (< <maxStreamlineCount>).
         int streamlineCount = shape.Item1 * shape.Item2;
 
-        // Update for GPU.
-        InitializeIterator(streamlineCount);
-
         // Set the initial points.
         seedBuffer.SetData(seedPoints);
+
+        // Update for GPU.
+        InitializeIterator(streamlineCount);
 
         // Get data after GPU-calculation.
         streamlineBuffer.GetData(streamlinePoints);
@@ -164,25 +165,27 @@ public class VectorFieldVisualizer : MonoBehaviour {
         // Draw streamlines for debugging.
         /*
         DrawStreamlinesDebug(ref streamlinePoints, 
-                                   iteratorSteps, 
-                                   maxStreamlineCount, 
-                                   streamlineCount, 
-                                   volumeBoundaryMin);
+                             iteratorSteps, 
+                             maxStreamlineCount, 
+                             streamlineCount);
         */
 
         // Reconstruct streamlines.
         InitializeReconstructor();
 
         // For debugging, retrieve normal data and display it at the corresponding vertices.
+        /*
         Vector3[] normalArray = new Vector3[maxStreamlineCount * iteratorSteps];
+        Vector3[] tangentArray = new Vector3[maxStreamlineCount * iteratorSteps];
         normalBuffer.GetData(normalArray);
+        tangentBuffer.GetData(tangentArray);
         DrawStreamlineNormalsDebug(ref streamlinePoints,
                                    ref normalArray,
                                    iteratorSteps,
                                    maxStreamlineCount,
                                    streamlineCount,
-                                   volumeBoundaryMin,
                                    10.0f);
+        */
 
         // Initialize tube shader.
         InitializeTubeShader(streamlineCount);
@@ -208,8 +211,7 @@ public class VectorFieldVisualizer : MonoBehaviour {
      */
     private (int, int) GenerateGridSeedPoints(Vector3[] corners, 
                                               ref Vector3[] seedPoints, 
-                                              float delta, 
-                                              Vector3 volumeBoundaryMin) {
+                                              float delta) {
         Vector3 dispVecU = corners[1] - corners[0];
         Vector3 dispVecV = corners[2] - corners[0];
         float distU = Vector3.Magnitude(dispVecU);
@@ -234,11 +236,12 @@ public class VectorFieldVisualizer : MonoBehaviour {
             string exceptionMessage = "The number of seed-points exceeds the maximal number of streamlines you have " +
                                       "requested. Please increase the maxStreamlineCount or increase displacement.";
             throw new System.Exception(exceptionMessage);
-        } 
+        }
+
         for (int u = 0; u < U; u++) {
             for (int v = 0; v < V; v++) {
                 Vector3 rawVec = corners[0] + u * delta * dispVecNormU + v * delta * dispVecNormV;
-                seedPoints[u * V + v] = SwapYZ(rawVec - volumeBoundaryMin);
+                seedPoints[u * V + v] = SwapYZ(rawVec);
             }
         }
 
@@ -269,12 +272,11 @@ public class VectorFieldVisualizer : MonoBehaviour {
     void DrawStreamlinesDebug(ref Vector3[] positions, 
                               int iteratorSteps, 
                               int maxStreamlineCount, 
-                              int streamlineCount,
-                              Vector3 volumeBoundaryMin) {
+                              int streamlineCount) {
         for (int i = 0; i < streamlineCount; i++) {
             for (int j = 1; j < iteratorSteps; j++) {
-                Vector3 last = SwapYZ(positions[i + (j - 1) * maxStreamlineCount]) + volumeBoundaryMin;
-                Vector3 curr = SwapYZ(positions[i + j * maxStreamlineCount]) + volumeBoundaryMin;
+                Vector3 last = SwapYZ(positions[i + (j - 1) * maxStreamlineCount]);
+                Vector3 curr = SwapYZ(positions[i + j * maxStreamlineCount]);
                 float distance = Vector3.Magnitude(last - curr);
                 maxStepDist = distance > maxStepDist ? distance : maxStepDist;
                 minStepDist = distance < minStepDist ? distance : minStepDist;
@@ -287,12 +289,11 @@ public class VectorFieldVisualizer : MonoBehaviour {
     void DrawStreamlinesDebugSimple(ref Vector3[] positions, 
                                     int iteratorSteps, 
                                     int maxStreamlineCount, 
-                                    int streamlineCount,
-                                    Vector3 volumeBoundaryMin) {
+                                    int streamlineCount) {
         for (int i = 0; i < streamlineCount; i++) {
             for (int j = 1; j < iteratorSteps; j++) {
-                Vector3 last = SwapYZ(positions[i + (j - 1) * maxStreamlineCount]) + volumeBoundaryMin;
-                Vector3 curr = SwapYZ(positions[i + j * maxStreamlineCount]) + volumeBoundaryMin;
+                Vector3 last = SwapYZ(positions[i + (j - 1) * maxStreamlineCount]);
+                Vector3 curr = SwapYZ(positions[i + j * maxStreamlineCount]);
                 float t = (float) i / streamlineCount;
                 Debug.DrawLine(last, curr, gradient.Evaluate(Mathf.Min(t, 1.0f)));
             }
@@ -307,17 +308,16 @@ public class VectorFieldVisualizer : MonoBehaviour {
                                     int iteratorSteps,
                                     int maxStreamlineCount,
                                     int streamlineCount,
-                                    Vector3 volumeBoundaryMin,
                                     float normalMultiplier) {
         for (int i = 0; i < streamlineCount; i++) {
             for (int j = 0; j < iteratorSteps; j++) {
-                Vector3 p = SwapYZ(positions[i + j * maxStreamlineCount]) + volumeBoundaryMin;
+                Vector3 p = SwapYZ(positions[i + j * maxStreamlineCount]);
                 Vector3 n = SwapYZ(normals[i + j * maxStreamlineCount]);
                 float t = (float) j / iteratorSteps;
                 Debug.DrawLine(p, p + normalMultiplier * n, gradient.Evaluate(t));
                 if (i == 0) {
                     Debug.Log("Point: " + p);
-                    Debug.Log("Point and normal: " + (p + n));
+                    Debug.Log("Normal: " + n);
                 }
             }
         }  
@@ -363,12 +363,13 @@ public class VectorFieldVisualizer : MonoBehaviour {
         computeShader.SetTexture(kernelId, vectorfieldTextureId, vectorfieldTexture, 0);
         computeShader.SetBuffer(kernelId, streamlineBufferId, streamlineBuffer);
         computeShader.SetBuffer(kernelId, seedBufferId, seedBuffer);
+        computeShader.SetVector(volumeBoundaryMinId, SwapYZ(volumeBoundaryMin));
         computeShader.Dispatch(kernelId, groupCount, 1, 1);
     }
 
     void InitializeReconstructor() {
         int kernelId = computeShader.FindKernel("Reconstructor");
-        computeShader.SetBuffer(kernelId, streamlineBufferId, streamlineBuffer);
+        computeShader.SetBuffer(kernelId, streamlineRecBufferId, streamlineBuffer);
         computeShader.SetBuffer(kernelId, tangentBufferId, tangentBuffer);
         computeShader.SetBuffer(kernelId, normalBufferId, normalBuffer);
         computeShader.SetBuffer(kernelId, segmentLengthBufferId, segmentLengthBuffer);

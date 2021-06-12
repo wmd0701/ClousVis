@@ -62,7 +62,7 @@ Shader "StreamTubeShader"
             // Index of the current slice in the buffers.
             uint idx = unity_InstanceID + _MaxStreamlineCount * seg;
 
-            float3 p = SwapYZ(_StreamlineBuffer[idx]) + _VolumeBoundaryMin;  // Position
+            float3 p = SwapYZ(_StreamlineBuffer[idx]);  // Position
             float3 t = SwapYZ(_TangentBuffer[idx]);     // Curve-TNB: Tangent 
             float3 n = SwapYZ(_NormalBuffer[idx]);      // Curve-TNB: Normal
             float3 b = cross(t, n);             // Curve-TNB: Binormal

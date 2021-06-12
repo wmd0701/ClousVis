@@ -38,6 +38,7 @@ uint iteratorSteps;
 float stepSize;
 float minLen;
 float maxLen;
+float4 volumeBoundaryMin;
 
 float3 Decode(float4 encoding) {
 
@@ -50,6 +51,9 @@ float3 Decode(float4 encoding) {
 }
 
 float4 SampleVectorField(float3 position) {
+
+    // Subtract volumeBoundaryMin for indexing.
+    position -= volumeBoundaryMin.xyz;
 
     // Calculate uvw based on position.
     float u = position.x / xDim;
@@ -79,6 +83,8 @@ void Iterator(uint id: SV_DispatchThreadID) {
     float3 position = seedBuffer[id];
 
     for (uint i = 0; i < iteratorSteps; i++) {
+
+        // Don't forget to add volumeBoundaryMin back in.
         streamlineBuffer[id + i * maxStreamlineCount] = position;
         position = RK4Step(position, stepSize);
     }
@@ -88,23 +94,25 @@ void Iterator(uint id: SV_DispatchThreadID) {
 void Reconstructor(uint id: SV_DispatchThreadID) {
 
     // Reconstruct first point.
-    float3 p0 = streamlineBuffer[id];
-    float3 p1 = streamlineBuffer[id + maxStreamlineCount];
+    float3 p0 = streamlineRecBuffer[id];
+    float3 p1 = streamlineRecBuffer[id + maxStreamlineCount];
     float3 t0 = normalize(p1 - p0);
     float3 b0 = cross(t0, normalize(p0));
     float3 n0 = cross(b0, t0);
     tangentBuffer[id] = t0;
-    normalBuffer[id] = n0;
-    segmentLengthBuffer[id] = 0.0f;
+    normalBuffer[id] = float3(1.0f, 1.0f, 1.0f);
+    segmentLengthBuffer[id] = n0;
 
     // Reconstruct remaining streamline except last position.
     for (uint i = 1; i < iteratorSteps - 1; i++) {
+
+        // Calculating the index.
         uint idx = id + i * maxStreamlineCount;
-        float p0 = streamlineBuffer[idx - maxStreamlineCount];
-        float p1 = streamlineBuffer[idx];
-        float p2 = streamlineBuffer[idx + maxStreamlineCount];
-        float t1 = normalize(p2 - p0);
-        float n1 = normalize(cross(b0, t1));
+        float3 p0 = streamlineRecBuffer[idx - maxStreamlineCount];
+        float3 p1 = streamlineRecBuffer[idx];
+        float3 p2 = streamlineRecBuffer[idx + maxStreamlineCount];
+        float3 t1 = normalize(p2 - p0);
+        float3 n1 = normalize(cross(b0, t1));
         tangentBuffer[idx] = t1;
         normalBuffer[idx] = n1;
         float len = length(p1 - p0);
@@ -115,12 +123,13 @@ void Reconstructor(uint id: SV_DispatchThreadID) {
             extremalLengthBuffer[1] = len;
         }
         b0 = cross(t1, n1);
+        segmentLengthBuffer[idx] = len;
     }
 
     // Reconstruct last point.
     uint idx = id + (iteratorSteps - 1) * maxStreamlineCount;
-    p0 = streamlineBuffer[idx - maxStreamlineCount];
-    p1 = streamlineBuffer[idx];
+    p0 = streamlineRecBuffer[idx - maxStreamlineCount];
+    p1 = streamlineRecBuffer[idx];
     float3 t1 = normalize(p1 - p0);
     float3 n1 = normalize(cross(b0, t1));
     tangentBuffer[idx] = t1;

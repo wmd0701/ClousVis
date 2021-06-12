@@ -279,7 +279,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8720de9459c23d44e8ae210521010e94, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  displacement: 5
+  displacement: 10
   gradient:
     serializedVersion: 2
     key0: {r: 0, g: 0.06621589, b: 0.5849056, a: 1}
