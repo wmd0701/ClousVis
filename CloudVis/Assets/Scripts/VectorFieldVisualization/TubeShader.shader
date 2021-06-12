@@ -17,7 +17,7 @@ Shader "StreamTubeShader"
 
         struct Input
         {
-            half param : COLOR;
+            half4 param : COLOR;
         };
 
         half _Smoothness;
@@ -58,7 +58,7 @@ Shader "StreamTubeShader"
             float angle = v.vertex.x; // Angle in slice
             float cap = v.vertex.y; // -1:head, +1:tail
             float seg = v.vertex.z; // Segment index 
-
+            float param = seg / 1025.0f;
             // Index of the current slice in the buffers.
             uint idx = unity_InstanceID + _MaxStreamlineCount * seg;
 
@@ -72,7 +72,13 @@ Shader "StreamTubeShader"
             // Feedback the results.
             v.vertex = float4(p + normal * _Radius * (1 - abs(cap)), 1);
             v.normal = normal * (1 - abs(cap)) + n * cap;
-            v.color = 1.0f;
+
+            int idx0 = ((int) (param / (1.0f / 7.0f)));
+            int idx1 = idx0 + 1;
+            half4 c1 = half4(_GradientColors[idx0], 0.0f);
+            half4 c2 = half4(_GradientColors[idx1], 0.0f);
+            float surplus = param - ((float) idx0) * (1.0f / 7.0f);
+            v.color = c1 * (1.0f - surplus) + c2 * surplus;
 
             #endif
         }
@@ -85,7 +91,7 @@ Shader "StreamTubeShader"
 
         void surf (Input IN, inout SurfaceOutputStandard o)
         {
-            o.Albedo = half3(1.0f, 1.0f, 1.0f);
+            o.Albedo = IN.param;
             o.Metallic = _Metallic;
             o.Smoothness = _Smoothness;
         }

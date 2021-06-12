@@ -36,6 +36,7 @@
     <ImplicitlyExpandDesignTimeFacades>false</ImplicitlyExpandDesignTimeFacades>
   </PropertyGroup>
   <ItemGroup>
+     <Compile Include="Assets\Scripts\VectorFieldCreator.cs" />
      <Compile Include="Assets\Scripts\VisManager.cs" />
      <Compile Include="Assets\Scripts\TextureCreator.cs" />
      <Compile Include="Assets\Scripts\VectorFieldVisualization\TubeTemplate.cs" />

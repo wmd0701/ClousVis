@@ -364,7 +364,7 @@ MonoBehaviour:
   displacement: 10
   gradient:
     serializedVersion: 2
-    key0: {r: 0, g: 0.06621589, b: 0.5849056, a: 1}
+    key0: {r: 0.123567164, g: 0.20526464, b: 0.8396226, a: 1}
     key1: {r: 0.4053984, g: 0, b: 0.4811321, a: 1}
     key2: {r: 0.7735849, g: 0, b: 0.020093307, a: 0}
     key3: {r: 1, g: 0.48233366, b: 0, a: 0}

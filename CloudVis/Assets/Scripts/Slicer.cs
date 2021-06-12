@@ -348,14 +348,18 @@ public class Slicer : MonoBehaviour
 	 * @return: An Vector3[] of size 4 where each entry is a corner point.
 	 */
 	public Vector3[] GetSliceCorners() {
-		float yMin = yRange.x;
-		float yMax = yRange.y;
-		Vector3[] corners = new Vector3[4];
-		corners[0] = Generate3DPoint(yMin, points[0]);
-		corners[1] = Generate3DPoint(yMin, points[points.Length - 1]);
-		corners[2] = Generate3DPoint(yMax, points[0]);
-		corners[3] = Generate3DPoint(yMax, points[points.Length - 1]);
-		return corners;
+		try {
+			float yMin = yRange.x;
+			float yMax = yRange.y;
+			Vector3[] corners = new Vector3[4];
+			corners[0] = Generate3DPoint(yMin, points[0]);
+			corners[1] = Generate3DPoint(yMin, points[points.Length - 1]);
+			corners[2] = Generate3DPoint(yMax, points[0]);
+			corners[3] = Generate3DPoint(yMax, points[points.Length - 1]);
+			return corners;
+		} catch {
+			return new Vector3[4];
+		}
 	}
 
 }

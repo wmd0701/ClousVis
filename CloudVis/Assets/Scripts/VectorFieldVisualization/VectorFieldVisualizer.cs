@@ -98,6 +98,7 @@ public class VectorFieldVisualizer : MonoBehaviour {
         material = new Material(material);
         material.name += "_cloned";
         materialIsCloned = true;
+        ExtractGradientColors();
     }
 
     void OnEnable() {
