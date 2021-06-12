@@ -3,7 +3,11 @@ guid: 8720de9459c23d44e8ae210521010e94
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - computeShader: {instanceID: 0}
+  - vectorfieldTexture: {fileID: 11700000, guid: 4802de630c36626428ade6d8eda6b4e0,
+      type: 2}
+  - volumeBoundary: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

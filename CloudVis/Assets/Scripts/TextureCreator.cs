@@ -15,50 +15,37 @@ public class TextureCreator : ScriptableObject
 	public string sourceName = "clw";
 	public string TextureName = "clw_normalized";
 
-	// creates a sphere of radius 7.5km at the center of the texture. This was just for testing purposes.
-	public void createSphere()
+	// This is an example function used to load some binary file and convert it to texture.
+	public void generateVectorfield()
 	{
-		Texture3D texture = new Texture3D(sizeX, sizeY, sizeZ, format, false);
+		Texture3D texture = new Texture3D(sizeX, sizeY, sizeZ, format, false); // TODO: This is not aligned with what we use in unity, where y is up... change it.
 		texture.wrapMode = wrapMode;
 
-		int totalValues = sizeX * sizeY * sizeZ;
-		float[] data = new float[totalValues];
 
-		for (int y = 0; y < sizeY; y++)
-		{
-			int yOffset = y * sizeX * sizeZ;
-			for (int z = 0; z < sizeZ; z++)
-			{
-				int zOffset = z * sizeX;
-				for (int x = 0; x < sizeX; x++)
-				{
-					float length = Mathf.Sqrt((x-1752.0f) * (x - 1752.0f) + (y - 75.0f) * (y - 75.0f) + (z - 1890.5f) * (z - 1890.5f));
-					if (length < 75.0f)
-					data[x + yOffset + zOffset] = 1/length;
-				}
-			}
-		}
-
-		texture.SetPixelData<float>(data, 0);
-		texture.Apply();
-
-		AssetDatabase.CreateAsset(texture, "Assets/SphereTexture.asset");
-		Debug.Log("Created a new texture at: "+"Assets/SphereTexture.asset");
-	}
-
-	// This is an example function used to load some binary file and convert it to texture.
-	public void readAndCreate()
-	{
-		float[] data_floats = new float[sizeX * sizeY * sizeZ];
+		//float[] data_floats = new float[sizeX * sizeY * sizeZ];
 
 		if (File.Exists("Assets/ImportedData/" + sourceName + ".data"))
 		{
 			using (BinaryReader reader = new BinaryReader(File.Open("Assets/ImportedData/" + sourceName + ".data", FileMode.Open)))
 			{
-				for (int i = 0; i < sizeX * sizeY * sizeZ; i++)
-				{
-					data_floats[i] = reader.ReadSingle() / 0.00631f; //normalize (by approximate largest value I found in paraview for clw)
-				}
+
+				for(int z = 0; z < sizeZ; z++)
+                {
+					for(int y = 0; y < sizeY; y++)
+                    {
+						for(int x = 0; x < sizeX; x++)
+						{
+							byte u = reader.ReadByte();
+							byte v = reader.ReadByte();
+							byte w = reader.ReadByte();
+							
+							Color32 c = new Color32((byte)u, (byte)v, (byte)w, 1);
+							texture.SetPixel(x, y, z, c);
+                        }
+                    }
+                }
+				
+				
 				reader.Close();
 			}
 		}
@@ -70,13 +57,62 @@ public class TextureCreator : ScriptableObject
 
 		Debug.Log("Successfully read the data!");
 
-		Texture3D texture = new Texture3D(sizeX, sizeZ, sizeY, format, false); // TODO: This is not aligned with what we use in unity, where y is up... change it.
-		texture.wrapMode = wrapMode;
+		//Texture3D texture = new Texture3D(sizeX, sizeZ, sizeY, format, false); // TODO: This is not aligned with what we use in unity, where y is up... change it.
+		//texture.wrapMode = wrapMode;
 
-		texture.SetPixelData<float>(data_floats, 0);
-		texture.Apply();
+		//texture.SetPixelData<float>(data_floats, 0);
+		//texture.Apply();
 
 		AssetDatabase.CreateAsset(texture, "Assets/"+TextureName+".asset");
+	}
+
+
+	public void generateClouds()
+	{
+		Texture3D texture = new Texture3D(sizeX, sizeY, sizeZ, format, false); // TODO: This is not aligned with what we use in unity, where y is up... change it.
+		texture.wrapMode = wrapMode;
+
+		if (File.Exists("Assets/ImportedData/" + sourceName + ".data"))
+		{
+			using (BinaryReader reader = new BinaryReader(File.Open("Assets/ImportedData/" + sourceName + ".data", FileMode.Open)))
+			{
+				for (int z = 0; z < sizeZ; z++)
+				{
+					for (int y = 0; y < sizeY; y++)
+					{
+						for (int x = 0; x < sizeX; x++)
+						{
+							float ci = reader.ReadSingle();
+							if (ci > 0.0f) ci = Mathf.Clamp(ci / 0.0065f * 10.0f,0.0001f,1.0f);
+							float cw = reader.ReadSingle();
+							if (cw > 0.0f) cw = Mathf.Clamp(cw / 0.0065f * 10.0f, 0.0001f, 1.0f);
+							float qr = reader.ReadSingle();
+							if (qr > 0.0f) qr = Mathf.Clamp(qr / 0.0065f * 10.0f, 0.0001f, 1.0f);
+							float pres = reader.ReadSingle();
+
+							Color c = new Color(ci, cw, qr,1.0f);
+							texture.SetPixel(x, y, z, c);
+						}
+					}
+				}
+
+				reader.Close();
+			}
+		}
+		else
+		{
+			Debug.LogError("File " + sourceName + " not found. Please make sure it is in folder: Assets/ImportedData/  and that it ends in .data!");
+			return;
+		}
+
+		Debug.Log("Successfully read the data!");
+
+		//Texture3D texture = new Texture3D(sizeX, sizeZ, sizeY, format, false); // TODO: This is not aligned with what we use in unity, where y is up... change it.
+		//texture.wrapMode = wrapMode;
+		//texture.SetPixelData<float>(data_floats, 0);
+		//texture.Apply();
+
+		AssetDatabase.CreateAsset(texture, "Assets/" + TextureName + ".asset");
 	}
 
 }
@@ -89,13 +125,13 @@ public class TextureEditor : Editor
 		base.OnInspectorGUI();
 
 		EditorGUI.BeginDisabledGroup(serializedObject.isEditingMultipleObjects);
-		if (GUILayout.Button("Read and Create"))
+		if (GUILayout.Button("Generate cloud texture"))
 		{
-			((TextureCreator)target).readAndCreate();
+			((TextureCreator)target).generateClouds();
 		}
-		if (GUILayout.Button("Debug: Create Sphere"))
+		if (GUILayout.Button("Generate Vectorfield"))
 		{
-			((TextureCreator) target).createSphere();
+			((TextureCreator)target).generateVectorfield();
 		}
 		EditorGUI.EndDisabledGroup();
 	}

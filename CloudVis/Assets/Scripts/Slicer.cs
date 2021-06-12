@@ -307,6 +307,7 @@ public class Slicer : MonoBehaviour
 
 	private void OnDrawGizmos()
 	{
+		/*
 		if (!viewValid) Gizmos.color = new Color(1.0f, 0.0f, 0.0f);
 		else Gizmos.color = new Color(0.0f, 1.0f, 0.0f);
 		Gizmos.DrawWireSphere(transform.position + transform.forward * rayDistance, frustumRadius);
@@ -319,7 +320,6 @@ public class Slicer : MonoBehaviour
 		Gizmos.color = Color.green;
 		Gizmos.color = new Color(0.0f, 1.0f, 0.0f);
 		
-		/*
 		for (int y = yRange.x; y <= yRange.y; y+=2)
         {
 			for (int i = 0; i < points.Length; i++)

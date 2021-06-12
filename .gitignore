@@ -4,7 +4,10 @@ CloudVis/obj/
 CloudVis/UserSettings/
 
 CloudVis/Assets/clw_normalized.asset
-CloudVis/Assets/ImportedData/clw.dataTemp/*
+CloudVis/Assets/clouds.asset
+CloudVis/Assets/winds.asset
+CloudVis/Assets/ImportedData/*
 CloudVis/Temp/*
-CloudVis/Assets/ImportedData/VectorFieldTexture.asset
-CloudVis/Assets/ImportedData/VectorFieldTexture.asset.meta
+CloudVis/Images/*
+
+CloudVis/.vs/*

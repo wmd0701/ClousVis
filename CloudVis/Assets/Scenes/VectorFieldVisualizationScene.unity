@@ -245,13 +245,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1693814723}
-  m_LocalRotation: {x: 0.16000095, y: -0, z: -0, w: 0.9871169}
-  m_LocalPosition: {x: 78.7, y: 320, z: -2963}
+  m_LocalRotation: {x: 0.2836227, y: -0, z: -0, w: 0.9589359}
+  m_LocalPosition: {x: 49, y: 450.7, z: -265.1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 18.414, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 32.953, y: 0, z: 0}
 --- !u!114 &1693814727
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -310,10 +310,11 @@ MonoBehaviour:
     m_NumColorKeys: 5
     m_NumAlphaKeys: 2
   computeShader: {fileID: 7200000, guid: 8bd204565e322124eb8584b744b7d378, type: 3}
-  maxStreamlineCount: 512
-  iteratorSteps: 1024
+  maxStreamlineCount: 347
+  iteratorSteps: 3
   stepSize: 0.1
-  vectorfieldTexture: {fileID: 11700000, guid: 84537d90e52e2654e9fa057fe7fa1e19, type: 2}
+  vectorfieldTexture: {fileID: 11700000, guid: 4802de630c36626428ade6d8eda6b4e0, type: 2}
+  volumeBoundary: {fileID: 611916869}
 --- !u!1 &1697422047
 GameObject:
   m_ObjectHideFlags: 0
@@ -419,7 +420,7 @@ GameObject:
   - component: {fileID: 1759443539}
   - component: {fileID: 1759443538}
   - component: {fileID: 1759443537}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: GroundPlane
   m_TagString: Untagged
   m_Icon: {fileID: 0}

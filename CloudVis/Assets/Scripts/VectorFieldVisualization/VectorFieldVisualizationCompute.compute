@@ -49,7 +49,7 @@ float4 SampleVectorField(float3 position) {
     float v = position.y / yDim;
     float w = position.z / zDim;
     float3 uvw = float3(u, v, w);
-    return vectorfieldTexture.SampleLevel(my_trilinear_repeat_sampler, uvw, 0);
+    return vectorfieldTexture.SampleLevel(my_trilinear_repeat_sampler, uvw.xzy, 0);
 }
 
 float3 RK4Step(float3 x, float h) {
@@ -72,4 +72,3 @@ void Iterator(uint id: SV_DispatchThreadID) {
         position = RK4Step(position, stepSize);
     }
 }
-
