@@ -246,7 +246,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1693814723}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -899, y: 162, z: -2881}
+  m_LocalPosition: {x: -1880, y: 162, z: -3689}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -280,7 +280,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   displacement: 5
-  debugGradient:
+  gradient:
     serializedVersion: 2
     key0: {r: 0, g: 0.06621589, b: 0.5849056, a: 1}
     key1: {r: 0.4053984, g: 0, b: 0.4811321, a: 1}
@@ -311,10 +311,12 @@ MonoBehaviour:
     m_NumAlphaKeys: 2
   computeShader: {fileID: 7200000, guid: 8bd204565e322124eb8584b744b7d378, type: 3}
   maxStreamlineCount: 1024
-  iteratorSteps: 2048
-  stepSize: 0.01
+  stepSize: 0.1
   vectorfieldTexture: {fileID: 11700000, guid: 84537d90e52e2654e9fa057fe7fa1e19, type: 2}
-  volumeBoundary: {fileID: 0}
+  volumeBoundary: {fileID: 611916869}
+  material: {fileID: 2100000, guid: 941aa7cf93e294643a540f92890df050, type: 2}
+  radius: 1
+  template: {fileID: 11400000, guid: 95a70bb9fbb33ba4b87fca583701f71b, type: 2}
 --- !u!1 &1697422047
 GameObject:
   m_ObjectHideFlags: 0

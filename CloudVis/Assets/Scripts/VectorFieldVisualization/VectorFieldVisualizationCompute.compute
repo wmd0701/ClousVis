@@ -22,6 +22,9 @@ RWStructuredBuffer<float3> seedBuffer;          // Buffer holding the initial po
 RWStructuredBuffer<float3> streamlineBuffer;    // Buffer holding the calculated positions for each trajectory.
 RWStructuredBuffer<float3> normalBuffer;        // Buffer holding the normals of the streamlines.
 RWStructuredBuffer<float3> tangentBuffer;       // Buffern holding the tangent lines of the streamlines.
+RWStructuredBuffer<float3> streamlineRecBuffer; // Buffer holding the positions from which to reconstruct.
+RWStructuredBuffer<float3> segmentLengthBuffer; // Buffer holding the lengths of the individual segments (for coloring).
+RWStructuredBuffer<float> extremalLengthBuffer; // Buffer holding the smallest and largest segment.
 
 // Texture holding the vectorfield.
 Texture3D<float4> vectorfieldTexture;
@@ -33,6 +36,8 @@ uint maxStreamlineCount;
 uint streamlineCount;
 uint iteratorSteps;
 float stepSize;
+float minLen;
+float maxLen;
 
 float3 Decode(float4 encoding) {
 
@@ -63,6 +68,10 @@ float3 RK4Step(float3 x, float h) {
     return x;
 }
 
+float3 SwapYZ(float3 vec) {
+    return float3(vec.x, vec.z, vec.y);
+}
+
 [numthreads(64, 1, 1)]
 void Iterator(uint id: SV_DispatchThreadID) {
     
@@ -86,16 +95,25 @@ void Reconstructor(uint id: SV_DispatchThreadID) {
     float3 n0 = cross(b0, t0);
     tangentBuffer[id] = t0;
     normalBuffer[id] = n0;
+    segmentLengthBuffer[id] = 0.0f;
 
     // Reconstruct remaining streamline except last position.
     for (uint i = 1; i < iteratorSteps - 1; i++) {
         uint idx = id + i * maxStreamlineCount;
         float p0 = streamlineBuffer[idx - maxStreamlineCount];
+        float p1 = streamlineBuffer[idx];
         float p2 = streamlineBuffer[idx + maxStreamlineCount];
         float t1 = normalize(p2 - p0);
         float n1 = normalize(cross(b0, t1));
         tangentBuffer[idx] = t1;
         normalBuffer[idx] = n1;
+        float len = length(p1 - p0);
+        if (len < minLen) {
+            extremalLengthBuffer[0] = len;
+        }
+        if (len > maxLen) {
+            extremalLengthBuffer[1] = len;
+        }
         b0 = cross(t1, n1);
     }
 

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[ExecuteInEditMode]
+// [ExecuteInEditMode]
 public class Slicer : MonoBehaviour
 {
 	public float minDistance = 150.0f;

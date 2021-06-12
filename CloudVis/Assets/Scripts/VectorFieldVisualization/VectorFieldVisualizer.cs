@@ -3,43 +3,75 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Slicer))]
-[ExecuteInEditMode]
+// [ExecuteInEditMode]
 public class VectorFieldVisualizer : MonoBehaviour {
 
-    public float displacement;              // Displacment at which grid points are seeded.
-    public Gradient debugGradient;          // Gradient used to color the debug streamlines.
-    public ComputeShader computeShader;     // Executes the streamline integration on the GPU.
-    public int maxStreamlineCount;          // Maximal number of streamlines that will be calculated.
-    public int iteratorSteps;               // Number of steps the of the integration.
-    public float stepSize;                  // Stepsize of the iterator.
-    public Texture3D vectorfieldTexture;    // 3D texture which contains the encoded vectorfield.
-    public GameObject volumeBoundary;       // Boundary of the area where vectorfield gets visualized in.
+    public float displacement;                  // Displacment at which grid points are seeded.
+    public Gradient gradient;                   // Gradient used to color the debug streamlines.
+    public ComputeShader computeShader;         // Executes the streamline integration on the GPU.
+    public int maxStreamlineCount;              // Maximal number of streamlines that will be calculated.
+    int iteratorSteps {get {return template.segmentCount + 1;}}                  // Number of steps the of the integration.
+    public float stepSize;                      // Stepsize of the iterator.
+    public Texture3D vectorfieldTexture;        // 3D texture which contains the encoded vectorfield.
+    public GameObject volumeBoundary;           // Boundary of the area where vectorfield gets visualized in.
+    public Material material;                   // Material of the tubes.
+    public float radius;                        // Radius of the tubes.
+    public TubeTemplate template;               // Template mesh for tubes.
 
-    private Slicer slicer;                  // Slicer instance to get slice plane.
-    private float maxStepDist;              // Maximal distance between two streamline-points (used for coloring).
-    private float minStepDist;              // Minimal distance between tw0 streamline-points (used for coloring).
-    private ComputeBuffer seedBuffer;       // Buffer holding the seedpoints for the streamlines in each frame (GPU).
-    private ComputeBuffer streamlineBuffer; // Buffer holding the positions of the streamlines (GPU).
-    private ComputeBuffer normalBuffer;     // Buffer for the normals of the streamlines.
-    private ComputeBuffer tangentBuffer;    // Buffer for the tangents of the streamlines.
-    private Vector3[] seedPoints;           // Array holding the seedpoints (CPU).
-    private Vector3[] streamlinePoints;     // Array holding the positions of the streamlines (CPU).    
-    private int groupSize = 64;             // Number of threads run in a single group.
-    private int groupCount;                 // Number of groups requires to calculate <maxStreamlineCount> streamlines.
-    private Vector3 volumeBoundaryMin;      // Minimal point of volume-boundary.
+    private Slicer slicer;                      // Slicer instance to get slice plane.
+    private float maxStepDist;                  // Maximal distance between two streamline-points (used for coloring).
+    private float minStepDist;                  // Minimal distance between tw0 streamline-points (used for coloring).
+    private ComputeBuffer seedBuffer;           // Buffer holding the seedpoints for the streamlines in each frame (GPU).
+    private ComputeBuffer streamlineBuffer;     // Buffer holding the positions of the streamlines (GPU).
+    private ComputeBuffer normalBuffer;         // Buffer for the normals of the streamlines.
+    private ComputeBuffer tangentBuffer;        // Buffer for the tangents of the streamlines.
+    private ComputeBuffer segmentLengthBuffer;  // Length of segments (used for coloring).
+    private ComputeBuffer gradientColors;       // Colors used to color the streamlines.
+    private ComputeBuffer drawArgsBuffer;       // Holds arguments to tube shader.
+    private ComputeBuffer extremalLenBuffer;    // Holds minimal (@0) and maximal (@1) segment length.
+    private MaterialPropertyBlock props;        // Holds material properties.
+    private Vector3[] seedPoints;               // Array holding the seedpoints (CPU).
+    private Vector3[] streamlinePoints;         // Array holding the positions of the streamlines (CPU).    
+    private int groupSize = 64;                 // Number of threads run in a single group.
+    private int groupCount;                     // Number of groups requires to calculate <maxStreamlineCount> streamlines.
+    private Vector3 volumeBoundaryMin;          // Minimal point of volume-boundary.
+    private bool materialIsCloned;              // Whether material is cloned.
 
 
     // Precomputation of the shader properties.
     static readonly int
+
+        // IDs for the Integration shader.
         seedBufferId = Shader.PropertyToID("seedBuffer"),
         streamlineBufferId = Shader.PropertyToID("streamlineBuffer"),
         tangentBufferId = Shader.PropertyToID("tangentBuffer"),
-        normalBufferId = Shader.PropertyToID("normalBufferId"),
+        normalBufferId = Shader.PropertyToID("normalBuffer"),
+        streamlineRecBufferId = Shader.PropertyToID("streamlineRecBuffer"),
         maxStreamlineCountId = Shader.PropertyToID("maxStreamlineCount"),
         streamlineCountId = Shader.PropertyToID("streamlineCount"),
+        segmentLengthBufferId = Shader.PropertyToID("segmentLengthBuffer"),
+        extremalLengthBufferId = Shader.PropertyToID("extremalLengthBuffer"),
         iteratorStepsId = Shader.PropertyToID("iteratorSteps"),
         stepSizeId = Shader.PropertyToID("stepSize"),
-        vectorfieldTextureId = Shader.PropertyToID("vectorfieldTexture");
+        vectorfieldTextureId = Shader.PropertyToID("vectorfieldTexture"),
+        minLenId = Shader.PropertyToID("minLen"),
+        maxLenId = Shader.PropertyToID("maxLen"),
+
+        // IDs for the tube shader.
+        _GradientColorsId = Shader.PropertyToID("_GradientColors"),
+        _RadiusId = Shader.PropertyToID("_Radius"),
+        _LocalToWorldId = Shader.PropertyToID("_LocalToWorld"),
+        _WorldToLocalId = Shader.PropertyToID("_WorldToLocal"),
+        _StreamlineBufferId = Shader.PropertyToID("_StreamlineBuffer"),
+        _TangentBufferId = Shader.PropertyToID("_TangentBuffer"),
+        _NormalBufferId = Shader.PropertyToID("_NormalBuffer"),
+        _IntegratorStepsId = Shader.PropertyToID("_IntegratorSteps"),
+        _MaxStreamlineCountId = Shader.PropertyToID("_MaxStreamlineCount"),
+        _StreamlineCountId = Shader.PropertyToID("_StreamlineCount"),
+        _VolumeBoundaryMinId = Shader.PropertyToID("_VolumeBoundaryMin"),
+        _ExtremalLenBufferId = Shader.PropertyToID("_ExtremalLenBuffer");
+
+
 
     // Start is called before the first frame update
     void Start() {
@@ -50,6 +82,21 @@ public class VectorFieldVisualizer : MonoBehaviour {
         maxStepDist = float.MinValue;
         minStepDist = float.MaxValue;
         volumeBoundaryMin = volumeBoundary.GetComponent<BoxCollider>().bounds.min;
+
+        // Instantiation of tube-rendering-related stuff.
+        drawArgsBuffer = new ComputeBuffer(1, 5 * sizeof(uint), ComputeBufferType.IndirectArguments);
+        drawArgsBuffer.SetData(new uint[5] {template.mesh.GetIndexCount(0), 
+                                            (uint) maxStreamlineCount, 
+                                            0, 0, 0});
+        
+        // Only used to avoid instancing bug.
+        props = new MaterialPropertyBlock();
+        props.SetFloat("_UniqueID", Random.value);
+
+        // Clone material (TODO: Find out why).
+        material = new Material(material);
+        material.name += "_cloned";
+        materialIsCloned = true;
     }
 
     void OnEnable() {
@@ -75,15 +122,22 @@ public class VectorFieldVisualizer : MonoBehaviour {
         // Buffers holding tangents and normals, same layout and size as <streamlineBuffer>.
         tangentBuffer = new ComputeBuffer(maxStreamlineCount * iteratorSteps, 4 * 3);
         normalBuffer = new ComputeBuffer(maxStreamlineCount * iteratorSteps, 4 * 3);
+        segmentLengthBuffer = new ComputeBuffer(maxStreamlineCount * iteratorSteps, 4 * 3);
+        gradientColors = new ComputeBuffer(8, 4 * 3);
+        extremalLenBuffer = new ComputeBuffer(2, 4);
     }
 
     void OnDisable() {
 
         // Deallocating resources to prevent memory leaks.
-        seedBuffer.Release();
-        seedBuffer = null;
-        streamlineBuffer.Release();
-        streamlineBuffer = null;
+        FreeBuffer(seedBuffer);
+        FreeBuffer(streamlineBuffer);
+        FreeBuffer(tangentBuffer);
+        FreeBuffer(normalBuffer);
+        FreeBuffer(segmentLengthBuffer);
+        FreeBuffer(gradientColors);
+        FreeBuffer(extremalLenBuffer);
+        FreeBuffer(drawArgsBuffer);
     }
 
     // Update is called once per frame
@@ -108,11 +162,29 @@ public class VectorFieldVisualizer : MonoBehaviour {
         streamlineBuffer.GetData(streamlinePoints);
 
         // Draw streamlines for debugging.
-        DrawStreamlinesDebugSimple(ref streamlinePoints, 
+        /*
+        DrawStreamlinesDebug(ref streamlinePoints, 
                                    iteratorSteps, 
                                    maxStreamlineCount, 
                                    streamlineCount, 
                                    volumeBoundaryMin);
+        */
+
+        // Reconstruct streamlines.
+        InitializeReconstructor();
+
+        // Initialize tube shader.
+        InitializeTubeShader(streamlineCount);
+
+        // Draw tubes.
+        Debug.Log(template.mesh.name);
+        Graphics.DrawMeshInstancedIndirect(mesh:template.mesh,
+                                           submeshIndex:0,
+                                           material:material,
+                                           bounds:new Bounds(transform.position, transform.lossyScale * 10000),
+                                           bufferWithArgs:drawArgsBuffer,
+                                           argsOffset:0,
+                                           properties:props);
     }
 
     /**
@@ -165,6 +237,7 @@ public class VectorFieldVisualizer : MonoBehaviour {
     /**
      * For visual debugging.
      */
+    /*
     void OnDrawGizmos() {
         Vector3[] corners = slicer.GetSliceCorners();
         (int, int) shape = GenerateGridSeedPoints(corners, ref seedPoints, displacement, volumeBoundaryMin);
@@ -177,6 +250,7 @@ public class VectorFieldVisualizer : MonoBehaviour {
             }
         }
     }
+    */
 
     /**
      * Visual debugging of streamlines.
@@ -194,7 +268,7 @@ public class VectorFieldVisualizer : MonoBehaviour {
                 maxStepDist = distance > maxStepDist ? distance : maxStepDist;
                 minStepDist = distance < minStepDist ? distance : minStepDist;
                 float t = (distance - minStepDist) / (maxStepDist - minStepDist);
-                Debug.DrawLine(last, curr, debugGradient.Evaluate(Mathf.Min(t, 1.0f)));
+                Debug.DrawLine(last, curr, gradient.Evaluate(Mathf.Min(t, 1.0f)));
             }
         }
     }
@@ -210,7 +284,7 @@ public class VectorFieldVisualizer : MonoBehaviour {
                 Vector3 curr = SwapYZ(positions[i + j * maxStreamlineCount]) + volumeBoundaryMin;
                 float distance = Vector3.Magnitude(last - curr);
                 float t = (float) i / streamlineCount;
-                Debug.DrawLine(last, curr, debugGradient.Evaluate(Mathf.Min(t, 1.0f)));
+                Debug.DrawLine(last, curr, gradient.Evaluate(Mathf.Min(t, 1.0f)));
             }
         }
     }
@@ -220,6 +294,30 @@ public class VectorFieldVisualizer : MonoBehaviour {
      */
     Vector3 SwapYZ(Vector3 vec) {
         return new Vector3(vec.x, vec.z, vec.y);
+    }
+
+    /**
+     * Extracts 8 color (maximal number of handles for gradient) values from the gradient and passes it to 
+     * <gradientColors>.
+     */
+    void ExtractGradientColors() {
+        
+        // Using Vector3[] here because I don't know whether Color[] is blittable.
+        Vector3[] colors = new Vector3[8];
+        for (int i = 0; i < 8; i++) {
+            Color color = gradient.Evaluate(i / 7.0f);
+            Vector3 colorVec = new Vector3(color.r, color.g, color.b);
+            colors[i] = colorVec;
+        }
+        gradientColors.SetData(colors);
+    }
+
+    /**
+     * Frees memory held by <buffer>.
+     */
+    void FreeBuffer(ComputeBuffer buffer) {
+        buffer.Release();
+        buffer = null;
     }
 
     void InitializeIterator(int streamlineCount) {
@@ -234,11 +332,28 @@ public class VectorFieldVisualizer : MonoBehaviour {
         computeShader.Dispatch(kernelId, groupCount, 1, 1);
     }
 
-    void InitializeReconstructor(int streamlineCount) {
+    void InitializeReconstructor() {
         int kernelId = computeShader.FindKernel("Reconstructor");
         computeShader.SetBuffer(kernelId, streamlineBufferId, streamlineBuffer);
         computeShader.SetBuffer(kernelId, tangentBufferId, tangentBuffer);
         computeShader.SetBuffer(kernelId, normalBufferId, normalBuffer);
+        computeShader.SetBuffer(kernelId, segmentLengthBufferId, segmentLengthBuffer);
+        computeShader.SetBuffer(kernelId, extremalLengthBufferId, extremalLenBuffer);
+        computeShader.SetFloat(minLenId, float.MaxValue);
+        computeShader.SetFloat(maxLenId, 0.0f);
+        Debug.Log("In InitializeReconstructor");
         computeShader.Dispatch(kernelId, groupCount, 1, 1);
+    }
+
+    void InitializeTubeShader(int streamlineCount) {
+        material.SetFloat(_RadiusId, radius);
+        material.SetInt(_MaxStreamlineCountId, maxStreamlineCount);
+        material.SetInt(_StreamlineCountId, streamlineCount);
+        material.SetBuffer(_ExtremalLenBufferId, extremalLenBuffer);
+        material.SetBuffer(_GradientColorsId, gradientColors);
+        material.SetBuffer(_StreamlineBufferId, streamlineBuffer);
+        material.SetBuffer(_TangentBufferId, tangentBuffer);
+        material.SetBuffer(_NormalBufferId, normalBuffer);
+        material.SetVector(_VolumeBoundaryMinId, volumeBoundaryMin);
     }
 }
