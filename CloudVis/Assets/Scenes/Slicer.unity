@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657826, g: 0.49641263, b: 0.57481676, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -516,13 +516,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1848889896}
-  m_LocalRotation: {x: 0.17768791, y: -0.3799921, z: 0.07511699, w: 0.9046494}
-  m_LocalPosition: {x: 1519.8, y: 72.2, z: -115.3}
+  m_LocalRotation: {x: 0.40257853, y: -0.49229687, z: 0.151418, w: 0.7567344}
+  m_LocalPosition: {x: 3906, y: 1140, z: -1200}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 22.246, y: -45.559, z: 0.054}
+  m_LocalEulerAnglesHint: {x: 49.321, y: -72.947, z: -14.864}
 --- !u!114 &1848889900
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -538,9 +538,12 @@ MonoBehaviour:
   m_LookSpeedController: 120
   m_LookSpeedMouse: 3
   m_MoveSpeed: 300
+  m_MoveSpeedVertical: 120
   m_MoveSpeedIncrement: 2.5
   m_Turbo: 7
   m_SimpleRotationOperation: 1
+  m_MaxHeight: 5000
+  m_MinHeight: 30
   hint: Ctrl to turbo camera
 --- !u!114 &1848889901
 MonoBehaviour:

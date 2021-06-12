@@ -36,11 +36,19 @@ Shader "Unlit/CloudShader"
 				float3 rayDirection : TEXCOORD2;
 			};
 
-			Texture3D<float> CloudTexture; // change to half
+			Texture3D<float4> CloudTexture;
 			SamplerState samplerCloudTexture;
 
 			sampler2D _MainTex;
 			sampler2D _CameraDepthTexture;
+
+			float4 phaseParameters;
+			float darknessThreshold;
+			int lightSteps;
+			float cw_densityThreshold;
+			float ci_densityThreshold;
+			float densityThreshold;
+			float4 _LightColor0;
 
 			v2f vert (appdata v)
 			{
@@ -54,6 +62,16 @@ Shader "Unlit/CloudShader"
 				return o;
 			}
 
+			// Henyey-greenstein phase function
+			float henyeygreenstein(float a, float g) {
+				float g2 = g * g;
+				return (1 - g2) / (4 * 3.1415f * pow(1 + g2 - 2 * g * (a), 1.5f));
+			}
+
+			float phase(float a) {
+				float scatterBlend = henyeygreenstein(a, phaseParameters.x) * 0.5f + henyeygreenstein(a, -phaseParameters.y) * 0.5f;
+				return phaseParameters.z + scatterBlend * phaseParameters.w;
+			}
 
 			float2 rayVolumeDistance(float3 rayOrigin, float3 invRayDirection)
 			{
@@ -80,17 +98,32 @@ Shader "Unlit/CloudShader"
 				// calculate texture sample positions:
 				const float3 boundsSize = volumeBoundsMax - volumeBoundsMin;
 				float3 uvw = (pos - volumeBoundsMin) / boundsSize;
-				uvw.y = 1.0f - uvw.y;
-				float density = CloudTexture.SampleLevel(samplerCloudTexture, uvw.xzy, 0);
+
+				float4 all_densities = CloudTexture.SampleLevel(samplerCloudTexture, uvw, 0);
+
+				float density = cw_densityThreshold * all_densities.y;
+				density = density < densityThreshold ? 0.0f : density;
+				density += ci_densityThreshold * all_densities.x;
+				density = density < densityThreshold ? 0.0f : density;
+				// TODO same for water... how do we color these differently?
 				return density;
 			}
 
-			float sampleSphereDensity(float3 pos)
-			{
-				// a simple analytic sphere with constant density.
-				float d = length(pos-float3(0.0f,50.0f,0.0f))-100.0f;
-				if (d < 0.0) return 0.005f;
-				else return 0.0f;
+
+
+			float lightmarch(float3 position) {
+				float3 directionToLight = _WorldSpaceLightPos0.xyz;
+				float distanceInsideVolume = rayVolumeDistance(position, 1.0f / directionToLight).y;
+
+				float stepSize = distanceInsideVolume / lightSteps;
+				float totalDensity = 0;
+
+				for (int step = 0; step < lightSteps; step++) {
+					position += directionToLight * stepSize;
+					totalDensity += max(0, sampleCloudDensity(position) * stepSize);
+				}
+
+				return darknessThreshold + exp(-totalDensity) * (1.0f - darknessThreshold);
 			}
 
 			fixed4 frag(v2f i) : SV_Target
@@ -105,51 +138,59 @@ Shader "Unlit/CloudShader"
 				float distanceInsideVolume = volumeDistances.y;
 
 				// terminate early if there is no cloud volume to raymarch
-				float4 worldColor = tex2D(_MainTex, i.uv);
-				if (distanceInsideVolume < 0.0001f) return worldColor;
+				float3 worldColor = tex2D(_MainTex, i.uv);
+				if (distanceInsideVolume < 0.0001f) return float4(worldColor,0);
 
 				// find max ray distance (distance to end of bounds or an object in the world.
 				float expDepth = SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, i.uv);
 				float depth = LinearEyeDepth(expDepth) * viewLength;
 				float maxMarchingDistance = min(depth - distanceToVolume, distanceInsideVolume);
 
-
-				fixed4 cloudColor = worldColor;
 				float thickness = 0.0f;
-				int steps = 1;
+
 				// do the actual raymarching
 				float3 volumeStart = rayOrigin + rayDirection * distanceToVolume;
-				static const float stepSize = 1.f;
+				static const float stepSize = 3.0f;
 				float3 marchingPosition;
-				float marchedDistance = 0.0f; // randomize a bit!
+				float marchedDistance = 0.0f;
+
+				// angle to sun for halo effect
+				float phaseangle = phase(dot(rayDirection, _WorldSpaceLightPos0.xyz));
 
 				float easingDistanceInv = 1/100.0f;
 				
+
+				float transmittance = 1.0f;
+				float3 light = float3(0.0f,0.0f,0.0f);
+
 				while (marchedDistance < maxMarchingDistance)
 				{
 					marchingPosition = volumeStart + marchedDistance * rayDirection;
 
 					float density = sampleCloudDensity(marchingPosition);
 
-					float relativeDistance = length(marchingPosition - rayOrigin) * easingDistanceInv;
-					float easing = relativeDistance < 1.0f ? 0.1 * relativeDistance : 1.0f;
+					//float relativeDistance = length(marchingPosition - rayOrigin) * easingDistanceInv;
+					//float easing = relativeDistance < 1.0f ? 0.1 * relativeDistance : 1.0f;
+					// *easing;
 
-					thickness += density * 0.1f; // *easing;
-
-					if (thickness >= 1.0f) { // terminate early
+					
+					if (density > 0) {
+						float lightInfluence = lightmarch(marchingPosition);
+						light += density * stepSize * transmittance * lightInfluence * phaseangle;
+						transmittance *= exp(-density * stepSize);
+					}
+					
+					if (transmittance <= 0.01f) { // terminate early
 						break;
 					}
 
 					marchedDistance += stepSize;
-					steps += 1;
 				}
 				
-				cloudColor.rgb = cloudColor.rgb*(1.0f-thickness) + thickness*float3(0.9f,0.9f,0.9f);
-				//cloudColor.gb = float2(0.0f, 0.0f);
-				//float stepFraction = (float)steps / 1500.0f;
-				//cloudColor.r = stepFraction;
+				float3 cloudColor = light * _LightColor0;
+				float3 finalColor = worldColor * transmittance + cloudColor;
 
-				return cloudColor;
+				return float4(finalColor,0.0f);
 			}
 			ENDCG
 		}
