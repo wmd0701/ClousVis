@@ -524,6 +524,7 @@ GameObject:
   - component: {fileID: 963194229}
   - component: {fileID: 963194232}
   - component: {fileID: 963194231}
+  - component: {fileID: 963194233}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -644,6 +645,9 @@ MonoBehaviour:
   qr_densityThreshold: 0
   pres_densityThreshold: 0
   showWind: 0
+  isovalue: 1
+  showIsolines: 0
+  isovalueStep: 0.01
 --- !u!114 &963194231
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -709,6 +713,21 @@ MonoBehaviour:
   minDistance: 150
   HalvingThresholdV: 56
   HalvingThreshold: 56
+--- !u!114 &963194233
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 963194225}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d43e1a8b68704b4bb335533b5774a1d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  visShader: {fileID: 4800000, guid: c82660ad970ba844f9ed73c4d355c4c0, type: 3}
+  visTexture: {fileID: 11700000, guid: e4ee79c864388664a9ca1861fce47625, type: 2}
+  shownComponent: 3
 --- !u!1 &1213043320
 GameObject:
   m_ObjectHideFlags: 0

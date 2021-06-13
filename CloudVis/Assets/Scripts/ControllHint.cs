@@ -14,16 +14,16 @@ public class ControllHint : MonoBehaviour
         ControllHintText = GetComponent<Text>();
         hintContent = "Camera Movement: \n" +
                         "   wasd/D-pad: basic movement\n" +
-                        "   q: upward\n" +
-                        "   e: backward\n" +
+                        "   q/e: up/backward\n" +
                         "   ctrl/shift/mouse left: speed up\n\n" +
                         "Toggle view: \n" +
                         "   1: Specific Cloud Ice Content\n" +
                         "   2: Specific Cloud Water Content\n" +
                         "   3: Rain Mixing Ratio\n" +
                         "   4: Air Pressuren\n" +
-                        "   5: Wind (vector field)\n" +
-                        "   0: No scalar/vector field";
+                        "   5: Isosurfaces (j/k: -/+isovalue)\n" +
+                        "   6: Wind (vector field)\n" +
+                        "   0: Nothing";
     }
 
     // Update is called once per frame
@@ -32,7 +32,7 @@ public class ControllHint : MonoBehaviour
         if(Input.GetKeyDown("h"))
         {
             ControllHintText.text = hintContent;
-            StartCoroutine(UpdateTextAndFadeOut(ControllHintText, 2.0f));
+            StartCoroutine(UpdateTextAndFadeOut(ControllHintText, 3.0f));
         }
 
     }

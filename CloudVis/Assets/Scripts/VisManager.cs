@@ -11,14 +11,14 @@ public class VisManager : MonoBehaviour
 
     public Texture3D visTexture;
 
-    public bool showIsolines = true;
+    public static bool showIsolines = false;
 
     public enum Component{waterContent = 1, iceContent = 0, rainMixingRatio = 2, showAll = 3};
 
     public Component shownComponent = Component.showAll;
 
     [Range(0, 1)]
-    public float isovalue = 0.1f;
+    public static float isovalue = 1.0f;
 
 
     // initialize the material on startup (editor as well as game mode)

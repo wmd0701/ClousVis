@@ -22,17 +22,18 @@ public class ToggleHint : MonoBehaviour
         var input = Input.inputString;
         switch (input)
         {
-            case "1": updateText = true; ToggleHintText.text = "Toggle to view: Specific Cloud Ice Content"; break;
-            case "2": updateText = true; ToggleHintText.text = "Toggle to view: Specific Cloud Water Content"; break;
-            case "3": updateText = true; ToggleHintText.text = "Toggle to view: Rain Mixing Ratio"; break;
-            case "4": updateText = true; ToggleHintText.text = "Toggle to view: Air Pressure"; break;
-            case "5": updateText = true; ToggleHintText.text = "Toggle to view: Wind (vector field)"; break;
-            case "0": updateText = true; ToggleHintText.text = "No scalar/vector field"; break;
+            case "1": updateText = true; ToggleHintText.text = "Current view: Specific Cloud Ice Content"; break;
+            case "2": updateText = true; ToggleHintText.text = "Current view: Specific Cloud Water Content"; break;
+            case "3": updateText = true; ToggleHintText.text = "Current view: Rain Mixing Ratio"; break;
+            case "4": updateText = true; ToggleHintText.text = "Current view: Air Pressure"; break;
+            case "5": updateText = true; ToggleHintText.text = "Current view: Isosurfaces (j/k: -/+ isovalue)"; break;
+            case "6": updateText = true; ToggleHintText.text = "Current view: Wind (vector field)"; break;
+            case "0": updateText = true; ToggleHintText.text = "Current view: Nothing"; break;
             default: updateText = false; break;
         }
 
         if (updateText)
-            StartCoroutine(UpdateTextAndFadeOut(ToggleHintText, 2.0f));
+            StartCoroutine(UpdateTextAndFadeOut(ToggleHintText, 4.0f));
     }
 
     public IEnumerator UpdateTextAndFadeOut(Text text, float f)
