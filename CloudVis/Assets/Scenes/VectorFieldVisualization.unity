@@ -364,7 +364,7 @@ MonoBehaviour:
   displacement: 10
   gradient:
     serializedVersion: 2
-    key0: {r: 0.123567164, g: 0.20526464, b: 0.8396226, a: 1}
+    key0: {r: 0.0031506082, g: 0.06396957, b: 0.5566038, a: 1}
     key1: {r: 0.4053984, g: 0, b: 0.4811321, a: 1}
     key2: {r: 0.7735849, g: 0, b: 0.020093307, a: 0}
     key3: {r: 1, g: 0.48233366, b: 0, a: 0}
@@ -397,7 +397,7 @@ MonoBehaviour:
   vectorfieldTexture: {fileID: 11700000, guid: 84537d90e52e2654e9fa057fe7fa1e19, type: 2}
   volumeBoundary: {fileID: 788251942}
   material: {fileID: 2100000, guid: 941aa7cf93e294643a540f92890df050, type: 2}
-  radius: 1
+  radius: 5
   template: {fileID: 11400000, guid: 95a70bb9fbb33ba4b87fca583701f71b, type: 2}
 --- !u!114 &1454668984
 MonoBehaviour:

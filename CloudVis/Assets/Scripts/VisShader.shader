@@ -297,7 +297,10 @@ Shader "Unlit/VisShader"
 
 				cloudColor = inIso ? cloudColor + cloudColor * diff + specular : cloudColor;
 
-				return cloudColor;
+				// if (showIsosurface)
+					return cloudColor;
+				// else
+					// return fixed4(0.0f, 0.0f, 0.0f, 0.0f);
 			}
 			ENDCG
 		}

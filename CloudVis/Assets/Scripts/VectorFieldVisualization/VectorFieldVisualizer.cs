@@ -28,7 +28,8 @@ public class VectorFieldVisualizer : MonoBehaviour {
     private ComputeBuffer segmentLengthBuffer;  // Length of segments (used for coloring).
     private ComputeBuffer gradientColors;       // Colors used to color the streamlines.
     private ComputeBuffer drawArgsBuffer;       // Holds arguments to tube shader.
-    private ComputeBuffer extremalLenBuffer;    // Holds minimal (@0) and maximal (@1) segment length.
+    private ComputeBuffer maxLengthBuffer;      // Holds the maximal segment length for each streamline.
+    private ComputeBuffer minLengthBuffer;      // Holds the minimal segment length for each streamline.
     private MaterialPropertyBlock props;        // Holds material properties.
     private Vector3[] seedPoints;               // Array holding the seedpoints (CPU).
     private Vector3[] streamlinePoints;         // Array holding the positions of the streamlines (CPU).    
@@ -51,7 +52,8 @@ public class VectorFieldVisualizer : MonoBehaviour {
         maxStreamlineCountId = Shader.PropertyToID("maxStreamlineCount"),
         streamlineCountId = Shader.PropertyToID("streamlineCount"),
         segmentLengthBufferId = Shader.PropertyToID("segmentLengthBuffer"),
-        extremalLengthBufferId = Shader.PropertyToID("extremalLengthBuffer"),
+        minLengthBufferId = Shader.PropertyToID("minLengthBuffer"),
+        maxLengthBufferId = Shader.PropertyToID("maxLengthBuffer"),
         iteratorStepsId = Shader.PropertyToID("iteratorSteps"),
         stepSizeId = Shader.PropertyToID("stepSize"),
         vectorfieldTextureId = Shader.PropertyToID("vectorfieldTexture"),
@@ -71,7 +73,9 @@ public class VectorFieldVisualizer : MonoBehaviour {
         _MaxStreamlineCountId = Shader.PropertyToID("_MaxStreamlineCount"),
         _StreamlineCountId = Shader.PropertyToID("_StreamlineCount"),
         _VolumeBoundaryMinId = Shader.PropertyToID("_VolumeBoundaryMin"),
-        _ExtremalLenBufferId = Shader.PropertyToID("_ExtremalLenBuffer");
+        _SegmentLengthBufferId = Shader.PropertyToID("_SegmentLengthBuffer"),
+        _MaxLengthBufferId = Shader.PropertyToID("_MaxLengthBuffer"),
+        _MinLenthBufferId = Shader.PropertyToID("_MinLengthBuffer");
 
 
 
@@ -127,7 +131,8 @@ public class VectorFieldVisualizer : MonoBehaviour {
         normalBuffer = new ComputeBuffer(maxStreamlineCount * iteratorSteps, 4 * 3);
         segmentLengthBuffer = new ComputeBuffer(maxStreamlineCount * iteratorSteps, 4);
         gradientColors = new ComputeBuffer(8, 4 * 3);
-        extremalLenBuffer = new ComputeBuffer(2, 4);
+        maxLengthBuffer = new ComputeBuffer(maxStreamlineCount, 4);
+        minLengthBuffer = new ComputeBuffer(maxStreamlineCount, 4);
     }
 
     void OnDisable() {
@@ -139,7 +144,8 @@ public class VectorFieldVisualizer : MonoBehaviour {
         FreeBuffer(normalBuffer);
         FreeBuffer(segmentLengthBuffer);
         FreeBuffer(gradientColors);
-        FreeBuffer(extremalLenBuffer);
+        FreeBuffer(maxLengthBuffer);
+        FreeBuffer(minLengthBuffer);
         FreeBuffer(drawArgsBuffer);
     }
 
@@ -187,6 +193,14 @@ public class VectorFieldVisualizer : MonoBehaviour {
                                    maxStreamlineCount,
                                    streamlineCount,
                                    10.0f);
+        */
+        /*
+        float[] segmentLengthArray = new float[maxStreamlineCount * iteratorSteps];
+        int offset = 0;
+        segmentLengthBuffer.GetData(segmentLengthArray);
+        for (int i = 0; i < iteratorSteps; i++) {
+            Debug.Log(segmentLengthArray[offset + i * maxStreamlineCount]);
+        }
         */
 
         // Initialize tube shader.
@@ -372,7 +386,20 @@ public class VectorFieldVisualizer : MonoBehaviour {
         computeShader.SetBuffer(kernelId, tangentBufferId, tangentBuffer);
         computeShader.SetBuffer(kernelId, normalBufferId, normalBuffer);
         computeShader.SetBuffer(kernelId, segmentLengthBufferId, segmentLengthBuffer);
-        computeShader.SetBuffer(kernelId, extremalLengthBufferId, extremalLenBuffer);
+        
+        // Setting the maximal and minimal values for each streamline.
+        float[] maxLengthArray = new float[maxStreamlineCount];
+        float[] minLengthArray = new float[maxStreamlineCount];
+        for (int i = 0; i < maxStreamlineCount; i++) {
+            maxLengthArray[i] = 0.0f;
+            minLengthArray[i] = float.MaxValue;
+        }
+        maxLengthBuffer.SetData(maxLengthArray);
+        minLengthBuffer.SetData(minLengthArray);
+
+        computeShader.SetBuffer(kernelId, maxLengthBufferId, maxLengthBuffer);
+        computeShader.SetBuffer(kernelId, minLengthBufferId, minLengthBuffer);
+
         computeShader.SetFloat(minLenId, float.MaxValue);
         computeShader.SetFloat(maxLenId, 0.0f);
         computeShader.Dispatch(kernelId, groupCount, 1, 1);
@@ -382,11 +409,13 @@ public class VectorFieldVisualizer : MonoBehaviour {
         material.SetFloat(_RadiusId, radius);
         material.SetInt(_MaxStreamlineCountId, maxStreamlineCount);
         material.SetInt(_StreamlineCountId, streamlineCount);
-        material.SetBuffer(_ExtremalLenBufferId, extremalLenBuffer);
+        material.SetBuffer(_MaxLengthBufferId, maxLengthBuffer);
+        material.SetBuffer(_MinLenthBufferId, minLengthBuffer);
         material.SetBuffer(_GradientColorsId, gradientColors);
         material.SetBuffer(_StreamlineBufferId, streamlineBuffer);
         material.SetBuffer(_TangentBufferId, tangentBuffer);
         material.SetBuffer(_NormalBufferId, normalBuffer);
+        material.SetBuffer(_SegmentLengthBufferId, segmentLengthBuffer);
         material.SetVector(_VolumeBoundaryMinId, volumeBoundaryMin);
     }
 
