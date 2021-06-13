@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 101b16eea5b80da4688319f38cb39929, type: 3}
   m_Name: TextureCreator
   m_EditorClassIdentifier: 
-  format: 4
-  wrapMode: 2
+  format: 18
+  wrapMode: 0
   sourceName: clouds
-  TextureName: clouds
+  TextureName: noise

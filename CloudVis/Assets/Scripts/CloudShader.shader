@@ -20,8 +20,8 @@ Shader "Unlit/CloudShader"
 
 			// 1 unit = 100m. This way all rendering stays stable enough
 			// original max height: 198.170f
-			static const float3 volumeBoundsMin = float3(-3752.0f, 1.830f, -3890.5f);
-			static const float3 volumeBoundsMax = float3(3752.0f, 400.0f, 3890.5f);
+			static const float3 volumeBoundsMin = float3(-3752.0f, 2.0f*1.83f, -3890.5f);
+			static const float3 volumeBoundsMax = float3(3752.0f, 2.0f*198.17f, 3890.5f);
 
 			struct appdata
 			{
@@ -39,6 +39,8 @@ Shader "Unlit/CloudShader"
 
 			Texture3D<float4> CloudTexture;
 			SamplerState samplerCloudTexture;
+
+			sampler2D noiseTexture;
 
 			sampler2D _MainTex;
 			sampler2D _CameraDepthTexture;
@@ -105,14 +107,14 @@ Shader "Unlit/CloudShader"
 				float4 all_densities = CloudTexture.SampleLevel(samplerCloudTexture, uvw, 0);
 
 				float density = 0.0f;
-				density += ci_densityThreshold * all_densities.x;
+				density += 0.03f * ci_densityThreshold * all_densities.x;
 				density = density < densityThreshold ? 0.0f : density;
-				density += cw_densityThreshold * all_densities.y;
+				density += 0.03f * cw_densityThreshold * all_densities.y;
 				density = density < densityThreshold ? 0.0f : density;
 				density += qr_densityThreshold * all_densities.z;
-				density = density < densityThreshold ? 0.0f : density;
+				density = 0.1f * density < densityThreshold ? 0.0f : density;
 				density += pres_densityThreshold * all_densities.w;
-				density = density < densityThreshold ? 0.0f : density;
+				density = density*10.0f < densityThreshold ? 0.0f : density;
 				return density;
 			}
 
@@ -123,6 +125,7 @@ Shader "Unlit/CloudShader"
 				float distanceInsideVolume = rayVolumeDistance(position, 1.0f / directionToLight).y;
 
 				float stepSize = distanceInsideVolume / lightSteps;
+
 				float totalDensity = 0;
 
 				for (int step = 0; step < lightSteps; step++) {
@@ -159,10 +162,10 @@ Shader "Unlit/CloudShader"
 				float3 volumeStart = rayOrigin + rayDirection * distanceToVolume;
 				static const float stepSize = 3.0f;
 				float3 marchingPosition;
-				float marchedDistance = 0.0f;
+				float marchedDistance = 5.0f * tex2D(noiseTexture,i.uv);
 
 				// angle to sun for halo effect
-				float phaseangle = phase(dot(rayDirection, _WorldSpaceLightPos0.xyz));
+				float phaseangle = phase(dot(-rayDirection, _WorldSpaceLightPos0.xyz));
 
 				float easingDistanceInv = 1/100.0f;
 				

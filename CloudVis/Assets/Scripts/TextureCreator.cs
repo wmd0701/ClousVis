@@ -12,13 +12,13 @@ public class TextureCreator : ScriptableObject
 	public TextureFormat format = TextureFormat.RFloat;
 	public TextureWrapMode wrapMode = TextureWrapMode.Clamp;
 
-	public string sourceName = "clw";
-	public string TextureName = "clw_normalized";
+	public string sourceName = "clouds";
+	public string TextureName = "clouds";
 
 	// This is an example function used to load some binary file and convert it to texture.
 	public void generateVectorfield()
 	{
-		Texture3D texture = new Texture3D(sizeX, sizeY, sizeZ, format, false); // TODO: This is not aligned with what we use in unity, where y is up... change it.
+		Texture3D texture = new Texture3D(sizeX, sizeY, sizeZ, format, false);
 		texture.wrapMode = wrapMode;
 
 
@@ -69,7 +69,7 @@ public class TextureCreator : ScriptableObject
 
 	public void generateClouds()
 	{
-		Texture3D texture = new Texture3D(sizeX, sizeY, sizeZ, format, false); // TODO: This is not aligned with what we use in unity, where y is up... change it.
+		Texture3D texture = new Texture3D(sizeX, sizeY, sizeZ, format, false);
 		texture.wrapMode = wrapMode;
 
 		if (File.Exists("Assets/ImportedData/" + sourceName + ".data"))
@@ -83,13 +83,14 @@ public class TextureCreator : ScriptableObject
 						for (int x = 0; x < sizeX; x++)
 						{
 							float ci = reader.ReadSingle();
-							if (ci > 0.0f) ci = Mathf.Clamp(ci / 0.0065f * 10.0f,0.0001f,1.0f);
+							if (ci > 0.0f) ci = Mathf.Clamp(ci / 0.00841903f * 10.0f,0.0001f,1.0f);
 							float cw = reader.ReadSingle();
-							if (cw > 0.0f) cw = Mathf.Clamp(cw / 0.0065f * 10.0f, 0.0001f, 1.0f);
+							if (cw > 0.0f) cw = Mathf.Clamp(cw / 0.00841903f * 10.0f, 0.0001f, 1.0f);
 							float qr = reader.ReadSingle();
-							if (qr > 0.0f) qr = Mathf.Clamp(qr / 0.0065f * 10.0f, 0.0001f, 1.0f);
+							if (qr > 0.0f) qr = Mathf.Clamp(qr / 0.00841903f * 10.0f, 0.0001f, 1.0f);
 							float pres = reader.ReadSingle();
 
+							pres = Mathf.Clamp((pres - 4882.6f) / 97806.4f, 0.0f, 1.0f);
 							Color c = new Color(ci, cw, qr,1.0f);
 							texture.SetPixel(x, y, z, c);
 						}
@@ -115,6 +116,27 @@ public class TextureCreator : ScriptableObject
 		AssetDatabase.CreateAsset(texture, "Assets/" + TextureName + ".asset");
 	}
 
+
+	public void generateNoise2D()
+    {
+		Texture2D texture = new Texture2D(512, 512, format, false); 
+		texture.wrapMode = wrapMode;
+
+		float[] data_floats = new float[512*512];
+		
+		for (int y = 0; y < 512; y++)
+		{
+			for (int x = 0; x < 512; x++)
+			{
+				float v = Random.RandomRange(0.0f, 1.0f);
+				data_floats[x + y * 512] = v;
+			}
+		}
+
+		texture.SetPixelData<float>(data_floats, 0);
+
+		AssetDatabase.CreateAsset(texture, "Assets/" + TextureName + ".asset");
+	}
 }
 
 [CustomEditor(typeof(TextureCreator), true)]
@@ -132,6 +154,10 @@ public class TextureEditor : Editor
 		if (GUILayout.Button("Generate Vectorfield"))
 		{
 			((TextureCreator)target).generateVectorfield();
+		}
+		if (GUILayout.Button("Generate Noise texture"))
+		{
+			((TextureCreator)target).generateNoise2D();
 		}
 		EditorGUI.EndDisabledGroup();
 	}

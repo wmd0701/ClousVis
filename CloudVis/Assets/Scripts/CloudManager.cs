@@ -9,6 +9,7 @@ public class CloudManager : MonoBehaviour
 	private Material cloudMaterial;
 
 	public Texture3D cloudTexture;
+	public Texture2D noiseTexture;
 
 	[Range(1,200)]
 	public int lightSteps = 1;
@@ -114,6 +115,7 @@ public class CloudManager : MonoBehaviour
 	{
 		if (cloudMaterial == null) cloudMaterial = new Material(cloudShader);
 		cloudMaterial.SetTexture("CloudTexture", cloudTexture);
+		cloudMaterial.SetTexture("noiseTexture", noiseTexture);
 		cloudMaterial.SetFloat("densityThreshold", densityThreshold);
 		cloudMaterial.SetFloat("darknessThreshold", darknessThreshold);
 		cloudMaterial.SetFloat("densityThreshold", densityThreshold);

@@ -73,6 +73,7 @@
     <Compile Include="Assets\Scripts\VisTextureCreator.cs" />
     <Compile Include="Assets\Scripts\CreateShadowMap.cs" />
     <Compile Include="Assets\Scripts\ToggleHint.cs" />
+    <Compile Include="Assets\Scripts\NoiseTexture2D.cs" />
   </ItemGroup>
   <ItemGroup>
      <None Include="Assets\Scripts\VisShader.shader" />
