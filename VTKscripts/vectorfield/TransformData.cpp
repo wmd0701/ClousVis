@@ -19,9 +19,9 @@ namespace {
 int main()
 {
 	// Filepaths.
-	std::string uFileName = "C:\\Users\\rapha\\Documents\\fs21\\vis\\Clouds\\ua\\ua_10.vti";
-	std::string vFileName = "C:\\Users\\rapha\\Documents\\fs21\\vis\\Clouds\\va\\va_10.vti";
-	std::string wFileName = "C:\\Users\\rapha\\Documents\\fs21\\vis\\Clouds\\wa\\wa_10.vti";
+	std::string uFileName = "path to ua_10.vti";
+	std::string vFileName = "path to va_10.vti";
+	std::string wFileName = "path to wa_10.vti";
 
 	// Reading.
 	vtkNew<vtkXMLImageDataReader> uReader;
@@ -93,7 +93,7 @@ int main()
 	*/
 
 	std::fstream binFile;
-	binFile.open("vectorfield2.data", std::ios::out | std::ios::binary);
+	binFile.open("vectorfield.data", std::ios::out | std::ios::binary);
 	for (int j = 0; j < 1556; j++) {
 		for (int i = 0; i < 150; i++) {
 			for (int k = 0; k < 1429; k++) {

@@ -14,10 +14,10 @@ inline unsigned int getLinearIndex(const unsigned int x, const unsigned int y, c
 
 int main()
 {
-	std::string inputFilename = "X:/Workspace/Visualization/Cloud/cli/cli_10.vti";
-	std::string inputFilename2 = "X:/Workspace/Visualization/Cloud/clw/clw_10.vti";
-	std::string inputFilename3 = "X:/Workspace/Visualization/Cloud/qr/qr_10.vti";
-	std::string inputFilename4 = "X:/Workspace/Visualization/Cloud/pres/pres_10.vti";
+	std::string inputFilename = "path to cli_10.vti";
+	std::string inputFilename2 = "path to clw_10.vti";
+	std::string inputFilename3 = "path to qr_10.vti";
+	std::string inputFilename4 = "path to pres_10.vti";
 
 	// Read the file
 	vtkNew<vtkXMLImageDataReader> reader;
@@ -92,7 +92,7 @@ int main()
 	float minval4 = 99999.0f;
 
 	std::fstream file;
-	file.open("X:/Workspace/Visualization/Cloud/cloud.data", std::ios::out | std::ios::binary);
+	file.open("cloud.data", std::ios::out | std::ios::binary);
 
 	//float minMag = 99999.0f;
 	//float maxmag = -99999.0f;
