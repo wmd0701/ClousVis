@@ -102,6 +102,13 @@ Shader "Unlit/VisShader"
 				return density;
 			}
 */
+			float sampleData(float3 pos)
+			{
+				const float3 boundsSize = volumeBoundsMax - volumeBoundsMin;
+				float3 uvw = (pos - volumeBoundsMin) / boundsSize;	
+				float3 density = VisTexture.SampleLevel(samplerVisTexture, uvw.xyz, 0);
+				return density;
+			}
 
 			float3 getTexPos(float3 pos)
 			{
@@ -152,27 +159,28 @@ Shader "Unlit/VisShader"
 				// do the actual raymarching
 				float3 volumeStart = rayOrigin + rayDirection * distanceToVolume;
 				static const float stepSize = 0.8f;
-				float3 marchingPosition;
+				float3 marchingPosition = {0.0f, 0.0f, 0.0f};
 				float marchedDistance = 0.0f; // randomize a bit!
 
 				// set colour values for different data types
-				float3 cCLW = float3(216.0f, 218.0f, 231.0f)/255.0f;		// CLW colour
-                float3 cCLI = float3(146.0f, 158.0f, 196.0f)/255.0f;		// CLI colour
-                float3 cQR = float3(207.0f, 112.0f, 112.0f)/255.0f;			// QR colour
+				float3 cCLI = float3(148.0f, 158.0f, 148.0f)/255.0f;		// CLI colour
+                float3 cCLW = float3(93.0f, 126.0f, 172.0f)/255.0f;		// CLW colour
+                float3 cQR = float3(165.0f, 85.0f, 80.0f)/255.0f;			// QR colour
 
 				float isoDistance = 200.0f;		// distance between isolines in meters
 				float3 texPos;
-				float3 sample;
+				float3 sample = {0.0f, 0.0f, 0.0f};
 				bool inIso = false;
 
 				switch(shownComponent)
 					{
-						case(0):
+						case(0):	// CLI
 							while (marchedDistance < maxMarchingDistance)
 							{
 								marchingPosition = volumeStart + marchedDistance * rayDirection;
 								texPos = getTexPos(marchingPosition);
 								sample = sampleCloudData(texPos);
+								//sample = sampleData(marchingPosition);
 								steps += 1;
 								marchedDistance += stepSize;
 								if (sample.x > isovalue) {
@@ -180,14 +188,16 @@ Shader "Unlit/VisShader"
 									break;
 								}
 							}
-							cloudColor.rgb = inIso ? cCLW : cloudColor.rgb;
+							cloudColor.rgb = inIso ? cCLI : cloudColor.rgb;
 							break;
-						case(1):
+
+						case(1):	// CLW
 							while (marchedDistance < maxMarchingDistance)
 							{
 								marchingPosition = volumeStart + marchedDistance * rayDirection;
 								texPos = getTexPos(marchingPosition);
 								sample = sampleCloudData(texPos);
+								//sample = sampleData(marchingPosition);
 								steps += 1;
 								marchedDistance += stepSize;
 								if (sample.y > isovalue) {
@@ -195,14 +205,16 @@ Shader "Unlit/VisShader"
 									break;
 								}
 							}
-							cloudColor.rgb = inIso ? cCLI : cloudColor.rgb;
+							cloudColor.rgb = inIso ? cCLW : cloudColor.rgb;
 							break;
-						case(2):
+
+						case(2):	// QR
 							while (marchedDistance < maxMarchingDistance)
 							{
 								marchingPosition = volumeStart + marchedDistance * rayDirection;
 								texPos = getTexPos(marchingPosition);
 								sample = sampleCloudData(texPos);
+								//sample = sampleData(marchingPosition);
 								steps += 1;
 								marchedDistance += stepSize;
 								if (sample.z > isovalue) {
@@ -212,13 +224,15 @@ Shader "Unlit/VisShader"
 							}
 							cloudColor.rgb = inIso ? cQR : cloudColor.rgb;
 							break;
-						case(3):
+
+						case(3):	// total water content
 							float totalWater;
 							while (marchedDistance < maxMarchingDistance)
 							{
 								marchingPosition = volumeStart + marchedDistance * rayDirection;
 								texPos = getTexPos(marchingPosition);
 								sample = sampleCloudData(texPos);
+								//sample = sampleData(marchingPosition);
 								steps += 1;
 								marchedDistance += stepSize;
 								totalWater = sample.x + sample.y + sample.z;
@@ -233,20 +247,55 @@ Shader "Unlit/VisShader"
 							break;
 					}
 
-				// compute gradient vector
-				float g_x = sampleCloudData(float3(texPos.x + 1/1429, texPos.yz)).x - sampleCloudData(float3(texPos.x - 1/1429, texPos.yz)).x;
-				float g_y = sampleCloudData(float3(texPos.x, texPos.y + 1/1556, texPos.z)).x - sampleCloudData(float3(texPos.x, texPos.y - 1/1556, texPos.z)).x;
-				float g_z = sampleCloudData(float3(texPos.xy, texPos.z + 1/150)).x - sampleCloudData(float3(texPos.xy, texPos.z - 1/150)).x;
 
-				float3 surfaceNormal = normalize(float3(g_x, g_y, g_z));
-				float3 directionToLight = normalize(_WorldSpaceLightPos0.xyz);
+				
+
+				// compute gradient vector
+				//float3 g_x = sampleCloudData(float3(texPos.x + 1/1429, texPos.yz)) - sampleCloudData(float3(texPos.x - 1/1429, texPos.yz));
+				//float3 g_y = sampleCloudData(float3(texPos.x, texPos.y + 1/1556, texPos.z)) - sampleCloudData(float3(texPos.x, texPos.y - 1/1556, texPos.z));
+				//float3 g_z = sampleCloudData(float3(texPos.xy, texPos.z + 1/150)) - sampleCloudData(float3(texPos.xy, texPos.z - 1/150));
+				//stepSize *= 100;
+
+				float3 g_x = sampleCloudData(getTexPos(float3(marchingPosition.x + stepSize, marchingPosition.yz)))
+							- sampleCloudData(getTexPos(float3(marchingPosition.x - stepSize, marchingPosition.yz)));
+				float3 g_y = sampleCloudData(getTexPos(float3(marchingPosition.x, marchingPosition.y + stepSize, marchingPosition.z)))
+							- sampleCloudData(getTexPos(float3(marchingPosition.x, marchingPosition.y - stepSize, marchingPosition.z)));
+				float3 g_z = sampleCloudData(getTexPos(float3(marchingPosition.xy, marchingPosition.z + stepSize)))
+							- sampleCloudData(getTexPos(float3(marchingPosition.xy, marchingPosition.z - stepSize)));
+
+
+				float3 gradient = {0.0f, 0.0f, 0.0f};
+				if (shownComponent != 3) {
+					gradient = float3(g_x[shownComponent], g_y[shownComponent], g_z[shownComponent]);
+				} else {
+					float sum_x = g_x[0] + g_x[1] + g_x[2];
+					float sum_y = g_y[0] + g_y[1] + g_y[2];
+					float sum_z = g_z[0] + g_z[1] + g_z[2];
+					gradient = float3(sum_x, sum_y, sum_z);
+				}
+
+				float3 surfaceNormal = normalize(gradient);
+				float3 directionToLight = -normalize(_WorldSpaceLightPos0.xyz);
 				float3 viewDirection = normalize(-rayDirection);
 				
 				float4 diff = saturate(dot(surfaceNormal, directionToLight));
 				float3 reflect = normalize(2 * diff * surfaceNormal - directionToLight);
-				float4 specular = pow(saturate(dot(reflect, directionToLight)), 8);
+				float4 specular = pow(saturate(dot(reflect, viewDirection)), 12);
+
+/*
+				if (specular.y > 0.0f) {
+					cloudColor.rgb = float3(1.0f, 0.0f, 0.0f);
+				}
+*/
+				
+
+				//cloudColor.rgb = cloudColor.rgb * gradient.z;
+				//cloudColor.r = sampleCloudData(float3(texPos.x + 1/1429, texPos.yz)).r;
+//				cloudColor.rgb = sampleCloudData(float3(texPos.x + 0.1, texPos.yz)).rgb - sampleCloudData(float3(texPos.x - 0.1, texPos.yz)).rgb;
 
 				// if (g_z > 0.0f) {cloudColor.rgb = float3(1.0f, g_y, g_z);}
+
+				cloudColor = inIso ? cloudColor + cloudColor * diff + specular : cloudColor;
 
 				return cloudColor;
 			}
