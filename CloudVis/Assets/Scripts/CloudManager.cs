@@ -100,21 +100,12 @@ public class CloudManager : MonoBehaviour
 				ci_densityThreshold = 0.0f;
 				cw_densityThreshold = 0.0f;
 				qr_densityThreshold = 0.0f;
-				pres_densityThreshold = 1.0f;
-				showWind = false;
-				isovalue = 1.0f;
-				showIsolines = false;
-				break;
-			case "5":
-				ci_densityThreshold = 0.0f;
-				cw_densityThreshold = 0.0f;
-				qr_densityThreshold = 0.0f;
 				pres_densityThreshold = 0.0f;
 				showWind = false;
 				isovalue = 0.9f;
 				showIsolines = true;
 				break;
-			case "6":
+			case "5":
 				ci_densityThreshold = 0.0f;
 				cw_densityThreshold = 0.0f;
 				qr_densityThreshold = 0.0f;
