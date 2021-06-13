@@ -23,8 +23,9 @@ RWStructuredBuffer<float3> streamlineBuffer;    // Buffer holding the calculated
 RWStructuredBuffer<float3> normalBuffer;        // Buffer holding the normals of the streamlines.
 RWStructuredBuffer<float3> tangentBuffer;       // Buffern holding the tangent lines of the streamlines.
 RWStructuredBuffer<float3> streamlineRecBuffer; // Buffer holding the positions from which to reconstruct.
-RWStructuredBuffer<float3> segmentLengthBuffer; // Buffer holding the lengths of the individual segments (for coloring).
-RWStructuredBuffer<float> extremalLengthBuffer; // Buffer holding the smallest and largest segment.
+RWStructuredBuffer<float> segmentLengthBuffer;  // Buffer holding the lengths of the individual segments (for coloring).
+RWStructuredBuffer<float> maxLengthBuffer;      // Buffer holding maximal segment-lengths among all segments per streamline.
+RWStructuredBuffer<float> minLengthBuffer;      // Buffer holding minimal segment-lengths among all segments per streamline.
 
 // Texture holding the vectorfield.
 Texture3D<float4> vectorfieldTexture;
@@ -101,7 +102,7 @@ void Reconstructor(uint id: SV_DispatchThreadID) {
     float3 n0 = cross(b0, t0);
     tangentBuffer[id] = t0;
     normalBuffer[id] = float3(1.0f, 1.0f, 1.0f);
-    segmentLengthBuffer[id] = n0;
+    segmentLengthBuffer[id] = length(p1 - p0);
 
     // Reconstruct remaining streamline except last position.
     for (uint i = 1; i < iteratorSteps - 1; i++) {
@@ -116,11 +117,13 @@ void Reconstructor(uint id: SV_DispatchThreadID) {
         tangentBuffer[idx] = t1;
         normalBuffer[idx] = n1;
         float len = length(p1 - p0);
-        if (len < minLen) {
-            extremalLengthBuffer[0] = len;
+        if (len < minLengthBuffer[id]) {
+            minLen = len;
+            minLengthBuffer[id] = len;
         }
-        if (len > maxLen) {
-            extremalLengthBuffer[1] = len;
+        if (len > maxLengthBuffer[id]) {
+            maxLen = len;
+            maxLengthBuffer[id] = len;
         }
         b0 = cross(t1, n1);
         segmentLengthBuffer[idx] = len;
@@ -134,4 +137,5 @@ void Reconstructor(uint id: SV_DispatchThreadID) {
     float3 n1 = normalize(cross(b0, t1));
     tangentBuffer[idx] = t1;
     normalBuffer[idx] = n1;
+    segmentLengthBuffer[idx] = length(p1 - p0);
 }
