@@ -36,7 +36,9 @@ Shader "StreamTubeShader"
         StructuredBuffer<float3> _TangentBuffer;
         StructuredBuffer<float3> _NormalBuffer;
         StructuredBuffer<float3> _GradientColors;
-        StructuredBuffer<float> _ExtremalLinesBuffer;
+        StructuredBuffer<float> _SegmentLengthBuffer;
+        StructuredBuffer<float> _MaxLengthBuffer;
+        StructuredBuffer<float> _MinLengthBuffer;
 
         uint _MaxStreamlineCount;
         uint _StreamlineCount;
@@ -58,7 +60,7 @@ Shader "StreamTubeShader"
             float angle = v.vertex.x; // Angle in slice
             float cap = v.vertex.y; // -1:head, +1:tail
             float seg = v.vertex.z; // Segment index 
-            float param = seg / 1025.0f;
+
             // Index of the current slice in the buffers.
             uint idx = unity_InstanceID + _MaxStreamlineCount * seg;
 
@@ -73,12 +75,28 @@ Shader "StreamTubeShader"
             v.vertex = float4(p + normal * _Radius * (1 - abs(cap)), 1);
             v.normal = normal * (1 - abs(cap)) + n * cap;
 
-            int idx0 = ((int) (param / (1.0f / 7.0f)));
+            // Compute the global mininmal and maximal segment length.
+            float globalMin = 100.0f;    // Should be large enough.
+            float globalMax = 0.0f;
+            for (uint i = 0; i < _StreamlineCount; i++) {
+                globalMin = _MinLengthBuffer[i] < globalMin ? _MinLengthBuffer[i] : globalMin;
+                globalMax = _MaxLengthBuffer[i] > globalMax ? _MaxLengthBuffer[i] : globalMax;
+            }
+
+            // The "time" at which to evaluate the gradient.
+            float time = (_SegmentLengthBuffer[idx] - globalMin) / (globalMax - globalMin);
+
+            // Clamping <time> to avoid coloring artifacts (shouldn't be necessary, just for security).
+            time = clamp(time, 0.0f, 1.0f);
+
+            // Ok now I know that there is an issue with the size of time.
+            float interval = 1.0f / 7.0f;   // Size of interval enclosed by color knots in gradient.
+            int idx0 = (int) (time / interval);
             int idx1 = idx0 + 1;
             half4 c1 = half4(_GradientColors[idx0], 0.0f);
             half4 c2 = half4(_GradientColors[idx1], 0.0f);
-            float surplus = param - ((float) idx0) * (1.0f / 7.0f);
-            v.color = c1 * (1.0f - surplus) + c2 * surplus;
+            float surplus = time - ((float) idx0) * interval;
+            v.color = 7.0f * (interval - surplus) * c1 + 7.0f * surplus * c2;
 
             #endif
         }
