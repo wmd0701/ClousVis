@@ -14,7 +14,7 @@ public class ControllHint : MonoBehaviour
         ControllHintText = GetComponent<Text>();
         hintContent = "Camera Movement: \n" +
                         "   wasd/D-pad: basic movement\n" +
-                        "   q/e: up/backward\n" +
+                        "   q/e: up/downward\n" +
                         "   ctrl/shift/mouse left: speed up\n\n" +
                         "Toggle view: \n" +
                         "   1: Specific Cloud Ice Content\n" +
