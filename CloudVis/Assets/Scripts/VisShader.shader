@@ -39,6 +39,10 @@ Shader "Unlit/VisShader"
 			Texture3D VisTexture; // change to half
 			SamplerState samplerVisTexture;
 
+			bool showIsosurface;
+			float isovalue;
+			int shownComponent;
+
 			sampler2D _MainTex;
 			sampler2D _CameraDepthTexture;
 
@@ -81,18 +85,35 @@ Shader "Unlit/VisShader"
 				VisTexture.SampleLevel(samplerVisTexture, pos.xzy, 0)
 			}
 			*/
+/*
+			float sampleCloudDensity(float3 pos)
+			{
+				// calculate texture sample positions:
+				const float3 boundsSize = volumeBoundsMax - volumeBoundsMin;
+				float3 uvw = (pos - volumeBoundsMin) / boundsSize;
+
+				float4 all_densities = VisTexture.SampleLevel(samplerVisTexture, uvw, 0);
+
+				float density = cw_densityThreshold * all_densities.y;
+				density = density < densityThreshold ? 0.0f : density;
+				density += ci_densityThreshold * all_densities.x;
+				density = density < densityThreshold ? 0.0f : density;
+				// TODO same for water... how do we color these differently?
+				return density;
+			}
+*/
 
 			float3 getTexPos(float3 pos)
 			{
 				const float3 boundsSize = volumeBoundsMax - volumeBoundsMin;
 				float3 uvw = (pos - volumeBoundsMin) / boundsSize;
-				uvw.y = 1.0f - uvw.y;
+				//uvw.y = 1.0f - uvw.y;
 				return uvw;
 			}
 
 			float3 sampleCloudData(float3 pos)
 			{
-				float3 density = VisTexture.SampleLevel(samplerVisTexture, pos.xzy, 0);
+				float3 density = VisTexture.SampleLevel(samplerVisTexture, pos.xyz, 0);
 				return density;
 			}
 
@@ -127,84 +148,105 @@ Shader "Unlit/VisShader"
 
 				fixed4 cloudColor = worldColor;
 				float3 cCloudWater = float3(0.0f, 0.0f, 0.0f);
-				float thickness = 0.0f;
 				int steps = 1;
 				// do the actual raymarching
 				float3 volumeStart = rayOrigin + rayDirection * distanceToVolume;
-				static const float stepSize = 0.4f;
+				static const float stepSize = 0.8f;
 				float3 marchingPosition;
 				float marchedDistance = 0.0f; // randomize a bit!
-
-				float easingDistanceInv = 1/100.0f;
-
-                float3 data;	// accumulate the sampled water content over all steps
-				float3 sample;	// sampled water content at current step
-
-				float threshold = 0.05f;
-				bool showIsosurface = false;
-				float inIso = 0.0f;
-				float isoDistance = 200.0f;		// distance between isolines in meters
 
 				// set colour values for different data types
 				float3 cCLW = float3(216.0f, 218.0f, 231.0f)/255.0f;		// CLW colour
                 float3 cCLI = float3(146.0f, 158.0f, 196.0f)/255.0f;		// CLI colour
                 float3 cQR = float3(207.0f, 112.0f, 112.0f)/255.0f;			// QR colour
 
+				float isoDistance = 200.0f;		// distance between isolines in meters
 				float3 texPos;
+				float3 sample;
+				bool inIso = false;
 
-                while (marchedDistance < maxMarchingDistance)
-                {
-                    marchingPosition = volumeStart + marchedDistance * rayDirection;
-
-					texPos = getTexPos(marchingPosition);
-                    sample = sampleCloudData(texPos);
-
-                    // cut off lower values according to thresholds from paper
-					// TODO: put this in texture generating script
-                    sample.x = sample.x > 0.063f ? sample.x : 0.0f;
-                    sample.y = sample.y > 0.148f ? sample.y : 0.0f;
-                    sample.z = sample.z > 0.013f ? sample.z : 0.0f;
-
-                    //data += sample;
-					data += sample;
-
-                    float density = sample.x + sample.y + sample.z;
-                    thickness += density * 0.1f;
-
-					if (showIsosurface && density > threshold) {
-						inIso = 1.0f;
-						break;
+				switch(shownComponent)
+					{
+						case(0):
+							while (marchedDistance < maxMarchingDistance)
+							{
+								marchingPosition = volumeStart + marchedDistance * rayDirection;
+								texPos = getTexPos(marchingPosition);
+								sample = sampleCloudData(texPos);
+								steps += 1;
+								marchedDistance += stepSize;
+								if (sample.x > isovalue) {
+									inIso = true;
+									break;
+								}
+							}
+							cloudColor.rgb = inIso ? cCLW : cloudColor.rgb;
+							break;
+						case(1):
+							while (marchedDistance < maxMarchingDistance)
+							{
+								marchingPosition = volumeStart + marchedDistance * rayDirection;
+								texPos = getTexPos(marchingPosition);
+								sample = sampleCloudData(texPos);
+								steps += 1;
+								marchedDistance += stepSize;
+								if (sample.y > isovalue) {
+									inIso = true;
+									break;
+								}
+							}
+							cloudColor.rgb = inIso ? cCLI : cloudColor.rgb;
+							break;
+						case(2):
+							while (marchedDistance < maxMarchingDistance)
+							{
+								marchingPosition = volumeStart + marchedDistance * rayDirection;
+								texPos = getTexPos(marchingPosition);
+								sample = sampleCloudData(texPos);
+								steps += 1;
+								marchedDistance += stepSize;
+								if (sample.z > isovalue) {
+									inIso = true;
+									break;
+								}
+							}
+							cloudColor.rgb = inIso ? cQR : cloudColor.rgb;
+							break;
+						case(3):
+							float totalWater;
+							while (marchedDistance < maxMarchingDistance)
+							{
+								marchingPosition = volumeStart + marchedDistance * rayDirection;
+								texPos = getTexPos(marchingPosition);
+								sample = sampleCloudData(texPos);
+								steps += 1;
+								marchedDistance += stepSize;
+								totalWater = sample.x + sample.y + sample.z;
+								if (totalWater / 2.0437f > isovalue) {		// normalize to max possible value in dataset (2.0437)
+									inIso = true;
+									break;
+								}
+							}
+							cloudColor.rgb = inIso ? ((sample.x * cCLW + sample.y * cCLI + sample.z * cQR) / totalWater) : cloudColor.rgb;
+							break;
+						default:
+							break;
 					}
 
+				// compute gradient vector
+				float g_x = sampleCloudData(float3(texPos.x + 1/1429, texPos.yz)).x - sampleCloudData(float3(texPos.x - 1/1429, texPos.yz)).x;
+				float g_y = sampleCloudData(float3(texPos.x, texPos.y + 1/1556, texPos.z)).x - sampleCloudData(float3(texPos.x, texPos.y - 1/1556, texPos.z)).x;
+				float g_z = sampleCloudData(float3(texPos.xy, texPos.z + 1/150)).x - sampleCloudData(float3(texPos.xy, texPos.z - 1/150)).x;
 
-                    if (!showIsosurface && thickness >= 1.0f) { // terminate early
-						break;
-					}
-
-                    steps += 1;
-                    marchedDistance += stepSize;
-                }
-
-				if (showIsosurface)
-				{
-					float3 cloud = float3(1.0f, 1.0f, 1.0f);
-					float3 isoline = float3(1.0f, 0.2, 0.2f);
-					float3 col;
-					float meter = 1/(20000.0f-183.0f);
-					col = fmod(texPos.y + 17.0f*meter, isoDistance*meter) > 0.002 ? cloud : isoline;
-					//col = cloud;
-					cloudColor.rgb = cloudColor.rgb*(1.0f-inIso) + inIso*col;
-					//if ((uvw.y - 0.1f * floor(uvw.y/0.1f)) > 0.01) {cloudColor.rgb = float3(0.2f, 0.4f, 0.8f); }
-				} else
-				{
-                	float totalWaterContent = (data.x + data.y + data.z);
-
-					if (totalWaterContent > 0) { cCloudWater = (data.x * cCLW + data.y * cCLI + data.z * cQR) / totalWaterContent; }		// linear combination of CLW, CLI and QR colour
-					cloudColor.rgb = cloudColor.rgb*(1.0f-thickness) + thickness*cCloudWater;
-				}
+				float3 surfaceNormal = normalize(float3(g_x, g_y, g_z));
+				float3 directionToLight = normalize(_WorldSpaceLightPos0.xyz);
+				float3 viewDirection = normalize(-rayDirection);
 				
-				//cloudColor.rgb = totalWaterContent > threshold ? cCloudWater : worldColor.rgb;
-				//cloudColor.rgb = cloudColor.rgb*(1.0f-thickness) + thickness*cCloudWater;
+				float4 diff = saturate(dot(surfaceNormal, directionToLight));
+				float3 reflect = normalize(2 * diff * surfaceNormal - directionToLight);
+				float4 specular = pow(saturate(dot(reflect, directionToLight)), 8);
+
+				// if (g_z > 0.0f) {cloudColor.rgb = float3(1.0f, g_y, g_z);}
 
 				return cloudColor;
 			}
