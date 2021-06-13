@@ -10,6 +10,7 @@ public class VisManager : MonoBehaviour
     private Material visMaterial;
 
     public Texture3D visTexture;
+    public Texture2D noiseTexture;
 
     public static bool showIsolines = false;
 
@@ -46,6 +47,7 @@ public class VisManager : MonoBehaviour
     {
         if (visMaterial == null) visMaterial = new Material(visShader);
         visMaterial.SetTexture("VisTexture", visTexture);
+        visMaterial.SetTexture("noiseTexture", noiseTexture);
         visMaterial.SetInt("showIsosurface", Convert.ToInt32(showIsolines));
         visMaterial.SetFloat("isovalue", isovalue);
         visMaterial.SetInt("shownComponent", (int)shownComponent);

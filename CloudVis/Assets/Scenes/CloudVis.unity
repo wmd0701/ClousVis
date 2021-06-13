@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.45130605, g: 0.5001825, b: 0.5690304, a: 1}
+  m_IndirectSpecularColor: {r: 0.45130575, g: 0.5001819, b: 0.5690313, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -632,7 +632,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cloudShader: {fileID: 4800000, guid: b93d27a9de7b0554b9ce9fe7ff0664c3, type: 3}
-  cloudTexture: {fileID: 11700000, guid: e4ee79c864388664a9ca1861fce47625, type: 2}
+  cloudTexture: {fileID: 11700000, guid: 58bdf76ecb2289c488400f22b4cbbbd8, type: 2}
+  noiseTexture: {fileID: 2800000, guid: 6b5ea5d8547293444a63332f170a585e, type: 2}
   lightSteps: 20
   darknessThreshold: 0.428
   forwardScattering: 0.165
@@ -645,8 +646,8 @@ MonoBehaviour:
   qr_densityThreshold: 0
   pres_densityThreshold: 0
   showWind: 0
-  isovalue: 1
-  showIsolines: 0
+  isovalue: 0
+  showIsolines: 1
   isovalueStep: 0.01
 --- !u!114 &963194231
 MonoBehaviour:
@@ -693,7 +694,7 @@ MonoBehaviour:
   computeShader: {fileID: 7200000, guid: 8bd204565e322124eb8584b744b7d378, type: 3}
   maxStreamlineCount: 128
   stepSize: 0.1
-  vectorfieldTexture: {fileID: 11700000, guid: 51f89cc7e1beb0340b1af5d4705886e1, type: 2}
+  vectorfieldTexture: {fileID: 11700000, guid: 4802de630c36626428ade6d8eda6b4e0, type: 2}
   volumeBoundary: {fileID: 1713853616}
   material: {fileID: 2100000, guid: 941aa7cf93e294643a540f92890df050, type: 2}
   radius: 1
@@ -726,7 +727,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   visShader: {fileID: 4800000, guid: c82660ad970ba844f9ed73c4d355c4c0, type: 3}
-  visTexture: {fileID: 11700000, guid: e4ee79c864388664a9ca1861fce47625, type: 2}
+  visTexture: {fileID: 11700000, guid: 58bdf76ecb2289c488400f22b4cbbbd8, type: 2}
+  noiseTexture: {fileID: 2800000, guid: 6b5ea5d8547293444a63332f170a585e, type: 2}
   shownComponent: 3
 --- !u!1 &1213043320
 GameObject:

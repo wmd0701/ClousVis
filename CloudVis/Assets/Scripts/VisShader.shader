@@ -19,8 +19,8 @@ Shader "Unlit/VisShader"
 			#include "UnityCG.cginc"
 
 			// 1 unit = 100m. This way all rendering stays stable enough
-			static const float3 volumeBoundsMin = float3(-3752.0f, 1.830f, -3890.5f);
-			static const float3 volumeBoundsMax = float3(3752.0f, 198.170f, 3890.5f);
+			static const float3 volumeBoundsMin = float3(-3752.0f, 2.0f*1.830f, -3890.5f);
+			static const float3 volumeBoundsMax = float3(3752.0f, 2.0f*198.170f, 3890.5f);
 
 			struct appdata
 			{
@@ -36,8 +36,10 @@ Shader "Unlit/VisShader"
 				float3 rayDirection : TEXCOORD2;
 			};
 
-			Texture3D VisTexture; // change to half
+			Texture3D VisTexture;
 			SamplerState samplerVisTexture;
+
+			sampler2D noiseTexture;
 
 			bool showIsosurface;
 			float isovalue;
@@ -160,7 +162,7 @@ Shader "Unlit/VisShader"
 				float3 volumeStart = rayOrigin + rayDirection * distanceToVolume;
 				static const float stepSize = 0.8f;
 				float3 marchingPosition = {0.0f, 0.0f, 0.0f};
-				float marchedDistance = 0.0f; // randomize a bit!
+				float marchedDistance = 5.0f * tex2D(noiseTexture, i.uv);
 
 				// set colour values for different data types
 				float3 cCLI = float3(148.0f, 158.0f, 148.0f)/255.0f;		// CLI colour

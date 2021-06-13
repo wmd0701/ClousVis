@@ -57,6 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\VectorFieldCreator.cs" />
+    <Compile Include="Assets\Scripts\NoiseTexture2D.cs" />
     <Compile Include="Assets\Scripts\VisManager.cs" />
     <Compile Include="Assets\Scripts\TextureCreator.cs" />
     <Compile Include="Assets\Scripts\VectorFieldVisualization\TubeTemplate.cs" />
@@ -73,7 +74,6 @@
     <Compile Include="Assets\Scripts\VisTextureCreator.cs" />
     <Compile Include="Assets\Scripts\CreateShadowMap.cs" />
     <Compile Include="Assets\Scripts\ToggleHint.cs" />
-    <Compile Include="Assets\Scripts\NoiseTexture2D.cs" />
   </ItemGroup>
   <ItemGroup>
      <None Include="Assets\Scripts\VisShader.shader" />
