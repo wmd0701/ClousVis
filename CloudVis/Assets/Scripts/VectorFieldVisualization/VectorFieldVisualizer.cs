@@ -37,6 +37,7 @@ public class VectorFieldVisualizer : MonoBehaviour {
     private int groupCount;                     // Number of groups requires to calculate <maxStreamlineCount> streamlines.
     private Vector3 volumeBoundaryMin;          // Minimal point of volume-boundary.
     private bool materialIsCloned;              // Whether material is cloned.
+    public static bool enabled;                 // Whether show tubes or not
 
 
     // Precomputation of the shader properties.
@@ -206,13 +207,15 @@ public class VectorFieldVisualizer : MonoBehaviour {
         InitializeTubeShader(streamlineCount);
 
         // Draw tubes.
-        Graphics.DrawMeshInstancedIndirect(mesh:template.mesh,
-                                           submeshIndex:0,
-                                           material:material,
-                                           bounds:new Bounds(transform.position, transform.lossyScale * 10000),
-                                           bufferWithArgs:drawArgsBuffer,
-                                           argsOffset:0,
-                                           properties:props);
+        if(enabled)
+            Graphics.DrawMeshInstancedIndirect(mesh:template.mesh,
+                                               submeshIndex:0,
+                                               material:material,
+                                               bounds:new Bounds(transform.position, transform.lossyScale * 10000),
+                                               bufferWithArgs:drawArgsBuffer,
+                                               argsOffset:0,
+                                               properties:props);
+
     }
 
     /**
@@ -415,4 +418,5 @@ public class VectorFieldVisualizer : MonoBehaviour {
         material.SetBuffer(_SegmentLengthBufferId, segmentLengthBuffer);
         material.SetVector(_VolumeBoundaryMinId, volumeBoundaryMin);
     }
+
 }

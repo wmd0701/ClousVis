@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.45130575, g: 0.5001819, b: 0.5690313, a: 1}
+  m_IndirectSpecularColor: {r: 0.45130605, g: 0.5001825, b: 0.5690304, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -219,7 +219,7 @@ RectTransform:
   - {fileID: 73254924}
   - {fileID: 20337166}
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -506,50 +506,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 116543306}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!1 &124062364
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 124062367}
-  - component: {fileID: 124062365}
-  m_Layer: 0
-  m_Name: CloudVolume
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &124062365
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 124062364}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 769075f93b5d37c45a18858477a86847, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  showBoundaries: 1
---- !u!4 &124062367
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 124062364}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 100.915, z: 0}
-  m_LocalScale: {x: 7504, y: 198.17, z: 7781}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &538620571
 GameObject:
   m_ObjectHideFlags: 0
@@ -579,7 +535,7 @@ Transform:
   m_Children:
   - {fileID: 116543307}
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!218 &701091509 stripped
 Terrain:
@@ -802,7 +758,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cloudShader: {fileID: 4800000, guid: b93d27a9de7b0554b9ce9fe7ff0664c3, type: 3}
-  cloudTexture: {fileID: 11700000, guid: 58bdf76ecb2289c488400f22b4cbbbd8, type: 2}
+  cloudTexture: {fileID: 11700000, guid: e4ee79c864388664a9ca1861fce47625, type: 2}
   lightSteps: 20
   darknessThreshold: 0.428
   forwardScattering: 0.165
@@ -810,8 +766,11 @@ MonoBehaviour:
   basicBrightness: 1
   phaseFactor: 0.193
   densityThreshold: 0
-  cw_densityThreshold: 1
-  ci_densityThreshold: 1
+  ci_densityThreshold: 0
+  cw_densityThreshold: 0
+  qr_densityThreshold: 0
+  pres_densityThreshold: 0
+  showWind: 0
 --- !u!114 &963194231
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -824,22 +783,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8720de9459c23d44e8ae210521010e94, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  displacement: 0.51
-  debugGradient:
+  displacement: 10
+  gradient:
     serializedVersion: 2
-    key0: {r: 1, g: 0, b: 0, a: 1}
-    key1: {r: 1, g: 0, b: 0, a: 1}
-    key2: {r: 0, g: 0, b: 0, a: 0}
-    key3: {r: 0, g: 0, b: 0, a: 0}
-    key4: {r: 0, g: 0, b: 0, a: 0}
+    key0: {r: 0.123567164, g: 0.20526464, b: 0.8396226, a: 1}
+    key1: {r: 0.4053984, g: 0, b: 0.4811321, a: 1}
+    key2: {r: 0.7735849, g: 0, b: 0.020093307, a: 0}
+    key3: {r: 1, g: 0.48233366, b: 0, a: 0}
+    key4: {r: 1, g: 0.8625596, b: 0, a: 0}
     key5: {r: 0, g: 0, b: 0, a: 0}
     key6: {r: 0, g: 0, b: 0, a: 0}
     key7: {r: 0, g: 0, b: 0, a: 0}
     ctime0: 0
-    ctime1: 65535
-    ctime2: 0
-    ctime3: 0
-    ctime4: 0
+    ctime1: 16384
+    ctime2: 32768
+    ctime3: 49151
+    ctime4: 65535
     ctime5: 0
     ctime6: 0
     ctime7: 0
@@ -852,14 +811,16 @@ MonoBehaviour:
     atime6: 0
     atime7: 0
     m_Mode: 0
-    m_NumColorKeys: 2
+    m_NumColorKeys: 5
     m_NumAlphaKeys: 2
   computeShader: {fileID: 7200000, guid: 8bd204565e322124eb8584b744b7d378, type: 3}
-  maxStreamlineCount: 512
-  iteratorSteps: 5
+  maxStreamlineCount: 128
   stepSize: 0.1
-  vectorfieldTexture: {fileID: 11700000, guid: 4802de630c36626428ade6d8eda6b4e0, type: 2}
+  vectorfieldTexture: {fileID: 11700000, guid: 51f89cc7e1beb0340b1af5d4705886e1, type: 2}
   volumeBoundary: {fileID: 1713853616}
+  material: {fileID: 2100000, guid: 941aa7cf93e294643a540f92890df050, type: 2}
+  radius: 1
+  template: {fileID: 11400000, guid: 95a70bb9fbb33ba4b87fca583701f71b, type: 2}
 --- !u!114 &963194232
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1201,7 +1162,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!1001 &1713853615
 PrefabInstance:
@@ -1210,10 +1171,15 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 5516478105329626552, guid: f02385e2d059ceb49910d5d3a09eb22d,
+        type: 3}
+      propertyPath: m_Size.y
+      value: 198.17
+      objectReference: {fileID: 0}
     - target: {fileID: 5516478105329626553, guid: f02385e2d059ceb49910d5d3a09eb22d,
         type: 3}
       propertyPath: m_RootOrder
-      value: 8
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 5516478105329626553, guid: f02385e2d059ceb49910d5d3a09eb22d,
         type: 3}
@@ -1512,7 +1478,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &4709506910997316286
 PrefabInstance:
@@ -1524,7 +1490,7 @@ PrefabInstance:
     - target: {fileID: 222064533325358163, guid: 8814ae9a1fb174e4e8ee7fb2381cb6f7,
         type: 3}
       propertyPath: m_RootOrder
-      value: 4
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 222064533325358163, guid: 8814ae9a1fb174e4e8ee7fb2381cb6f7,
         type: 3}

@@ -3,7 +3,9 @@ guid: 6d43e1a8b68704b4bb335533b5774a1d
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - visShader: {fileID: 4800000, guid: c82660ad970ba844f9ed73c4d355c4c0, type: 3}
+  - visTexture: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

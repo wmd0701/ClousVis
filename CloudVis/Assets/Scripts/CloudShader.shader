@@ -19,8 +19,9 @@ Shader "Unlit/CloudShader"
 			#include "UnityCG.cginc"
 
 			// 1 unit = 100m. This way all rendering stays stable enough
+			// original max height: 198.170f
 			static const float3 volumeBoundsMin = float3(-3752.0f, 1.830f, -3890.5f);
-			static const float3 volumeBoundsMax = float3(3752.0f, 198.170f, 3890.5f);
+			static const float3 volumeBoundsMax = float3(3752.0f, 400.0f, 3890.5f);
 
 			struct appdata
 			{
@@ -45,8 +46,10 @@ Shader "Unlit/CloudShader"
 			float4 phaseParameters;
 			float darknessThreshold;
 			int lightSteps;
-			float cw_densityThreshold;
 			float ci_densityThreshold;
+			float cw_densityThreshold;
+			float qr_densityThreshold;
+			float pres_densityThreshold;
 			float densityThreshold;
 			float4 _LightColor0;
 
@@ -101,11 +104,15 @@ Shader "Unlit/CloudShader"
 
 				float4 all_densities = CloudTexture.SampleLevel(samplerCloudTexture, uvw, 0);
 
-				float density = cw_densityThreshold * all_densities.y;
-				density = density < densityThreshold ? 0.0f : density;
+				float density = 0.0f;
 				density += ci_densityThreshold * all_densities.x;
 				density = density < densityThreshold ? 0.0f : density;
-				// TODO same for water... how do we color these differently?
+				density += cw_densityThreshold * all_densities.y;
+				density = density < densityThreshold ? 0.0f : density;
+				density += qr_densityThreshold * all_densities.z;
+				density = density < densityThreshold ? 0.0f : density;
+				density += pres_densityThreshold * all_densities.w;
+				density = density < densityThreshold ? 0.0f : density;
 				return density;
 			}
 

@@ -260,7 +260,7 @@ public class Slicer : MonoBehaviour
                 else
                 {
 					float orthoDirx = transform.right.z * halfFrustumWidth;
-					Debug.Log(orthoDirx);
+					// Debug.Log(orthoDirx);
 					voxelHalfSpanx = (int)Mathf.Ceil(Mathf.Abs(halfFrustumHeight) / (7504.0f / 1429.0f));
 					voxelHalfSpanz = (int)Mathf.Ceil(Mathf.Abs(orthoDirx) / (7781.0f / 1556.0f));
 				}
