@@ -14,14 +14,16 @@ public class ControllHint : MonoBehaviour
         ControllHintText = GetComponent<Text>();
         hintContent = "Camera Movement: \n" +
                         "   wasd/D-pad: basic movement\n" +
-                        "   q: upward\n" + 
+                        "   q: upward\n" +
                         "   e: backward\n" +
-                        "   ctrl/shift/mouse left: speed up\n\n" + 
+                        "   ctrl/shift/mouse left: speed up\n\n" +
                         "Toggle view: \n" +
-                        "   1: Specific Cloud Water Content\n" +
-                        "   2: Specific Cloud Ice Content\n" +
+                        "   1: Specific Cloud Ice Content\n" +
+                        "   2: Specific Cloud Water Content\n" +
                         "   3: Rain Mixing Ratio\n" +
-                        "   4: Air Pressure";
+                        "   4: Air Pressuren\n" +
+                        "   5: Wind (vector field)\n" +
+                        "   0: No scalar/vector field";
     }
 
     // Update is called once per frame

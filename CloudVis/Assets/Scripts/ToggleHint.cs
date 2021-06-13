@@ -22,10 +22,12 @@ public class ToggleHint : MonoBehaviour
         var input = Input.inputString;
         switch (input)
         {
-            case "1": updateText = true; ToggleHintText.text = "Toggle to view: Specific Cloud Water Content"; break;
-            case "2": updateText = true; ToggleHintText.text = "Toggle to view: Specific Cloud Ice Content"; break;
+            case "1": updateText = true; ToggleHintText.text = "Toggle to view: Specific Cloud Ice Content"; break;
+            case "2": updateText = true; ToggleHintText.text = "Toggle to view: Specific Cloud Water Content"; break;
             case "3": updateText = true; ToggleHintText.text = "Toggle to view: Rain Mixing Ratio"; break;
             case "4": updateText = true; ToggleHintText.text = "Toggle to view: Air Pressure"; break;
+            case "5": updateText = true; ToggleHintText.text = "Toggle to view: Wind (vector field)"; break;
+            case "0": updateText = true; ToggleHintText.text = "No scalar/vector field"; break;
             default: updateText = false; break;
         }
 

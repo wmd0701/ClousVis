@@ -7,17 +7,17 @@
 #include <vtkfloatArray.h>
 #include <iostream>
 #include <fstream>
- 
-inline int getLinearIndex(const int x, const int y, const int z) {
+
+inline unsigned int getLinearIndex(const unsigned int x, const unsigned int y, const unsigned int z) {
 	return x + y * 1429 + z * 1429 * 1556;
 }
 
 int main()
 {
-	std::string inputFilename = "C:/users/gdani/Desktop/Clouds/cli/cli_10.vti";
-	std::string inputFilename2 = "C:/users/gdani/Desktop/Clouds/clw/clw_10.vti";
-	std::string inputFilename3 = "C:/users/gdani/Desktop/Clouds/qr/qr_10.vti";
-	std::string inputFilename4 = "C:/users/gdani/Desktop/Clouds/pres/pres_10.vti";
+	std::string inputFilename = "X:/Workspace/Visualization/Cloud/cli/cli_10.vti";
+	std::string inputFilename2 = "X:/Workspace/Visualization/Cloud/clw/clw_10.vti";
+	std::string inputFilename3 = "X:/Workspace/Visualization/Cloud/qr/qr_10.vti";
+	std::string inputFilename4 = "X:/Workspace/Visualization/Cloud/pres/pres_10.vti";
 
 	// Read the file
 	vtkNew<vtkXMLImageDataReader> reader;
@@ -37,7 +37,7 @@ int main()
 	reader4->Update();
 
 	vtkImageData* data1 = reader->GetOutput();
-	vtkImageData * data2 = reader2->GetOutput();
+	vtkImageData* data2 = reader2->GetOutput();
 	vtkImageData* data3 = reader3->GetOutput();
 	vtkImageData* data4 = reader4->GetOutput();
 	//	double* bounds = data->GetSpacing();
@@ -88,11 +88,11 @@ int main()
 	int xminr = 1429, yminr = 1556, zminr = 150;
 	int xmaxr = 0, ymaxr = 0, zmaxr = 0;
 
-	float maxval4 = -99999.0f; 
+	float maxval4 = -99999.0f;
 	float minval4 = 99999.0f;
 
 	std::fstream file;
-	file.open("clouds.data", std::ios::out | std::ios::binary);
+	file.open("X:/Workspace/Visualization/Cloud/cloud.data", std::ios::out | std::ios::binary);
 
 	//float minMag = 99999.0f;
 	//float maxmag = -99999.0f;
@@ -113,6 +113,9 @@ int main()
 
 	float MAX_SUM = 0.00841903;
 
+	// scale air pressure value since they are too large
+	float pres_Scaler = 5e-8;
+
 #define N 2047
 	//std::vector<int> buckets_ice(N, 0.0f);
 	//std::vector<int> buckets_clo(N, 0.0f);
@@ -121,20 +124,21 @@ int main()
 	//std::vector<int> type_bucket(8, 0);
 
 
-	for (int j = 0; j < 1556; j++)
+	for (unsigned int j = 0; j < 1556; j++)
 	{
-		for (int i = 0; i < 150; i++)
+		for (unsigned int i = 0; i < 150; i++)
 		{
-			for (int k = 0; k < 1429; k++)
+			for (unsigned int k = 0; k < 1429; k++)
 			{
 				// first one is the index of the tuple, second one is index for component.
-				float ice = floatarray1->GetTypedComponent((149-i)*(1429*1556)+j*1429+k, 0);
-				float clo = floatarray2->GetTypedComponent((149-i) * (1429 * 1556) + j * 1429 + k, 0);
-				float wat = floatarray3->GetTypedComponent((149-i) * (1429 * 1556) + j * 1429 + k, 0);
+				float ice = floatarray1->GetTypedComponent((149 - i) * (1429 * 1556) + j * 1429 + k, 0);
+				float clo = floatarray2->GetTypedComponent((149 - i) * (1429 * 1556) + j * 1429 + k, 0);
+				float wat = floatarray3->GetTypedComponent((149 - i) * (1429 * 1556) + j * 1429 + k, 0);
 				float pres = floatarray4->GetTypedComponent((149 - i) * (1429 * 1556) + j * 1429 + k, 0);
-				
-				//if (pres < minval4) minval4 = pres;
-				//if (pres > maxval4) maxval4 = pres;
+				pres *= pres_Scaler;
+
+				if (pres < minval4) minval4 = pres;
+				if (pres > maxval4) maxval4 = pres;
 
 				//int rel_ice = 0;
 				//int rel_clo = 0;
@@ -160,7 +164,7 @@ int main()
 				//if (ice > 0.0f) type += 1;
 				//if (clo > 0.0f) type += 2;
 				//if (wat > 0.0f) type += 4;
-				
+
 				//type_bucket[type] += 1;
 
 				//if (sum > 0.0f) {
@@ -231,7 +235,7 @@ int main()
 
 
 	file.close();
-	
+
 	std::cout << "min max pres: " << minval4 << " " << maxval4 << std::endl;
 
 	//std::cout << std::endl << "nonzeros: " << nonzeros << std::endl; // just 2 Million actual entries above 0.00015
@@ -253,23 +257,26 @@ int main()
 	std::cout << "max wat ijk:" << xmaxr << " " << ymaxr << " " << zmaxr << std::endl;
 	*/
 
-	//std::cout << "bucket data: ice, cloud, water, type: " << std::endl;
-	for (int i = 0; i < N+1; i++) {
+	/*
+	std::cout << "bucket data: ice, cloud, water, type: " << std::endl;
+	for (int i = 0; i < N + 1; i++) {
 		//std::cout << buckets_ice[i] << ", ";
 	}
 	//std::cout << std::endl;
-	for (int i = 0; i < N+1; i++) {
+	for (int i = 0; i < N + 1; i++) {
 		//std::cout << buckets_clo[i] << ", ";
 	}
 	//std::cout << std::endl;
-	for (int i = 0; i < N+1; i++) {
+	for (int i = 0; i < N + 1; i++) {
 		//std::cout << buckets_wat[i] << ", ";
 	}
 	//std::cout << std::endl;
-	for (int i = 0; i < N+1; i++) {
+	for (int i = 0; i < N + 1; i++) {
 		//std::cout << buckets_sum[i] << ", ";
 	}
-	//std::cout << std::endl;
+	std::cout << std::endl;
+	*/
+	
 	/*
 	for (int i = 0; i < 8; i++) {
 		std::cout << type_bucket[i] << " ";

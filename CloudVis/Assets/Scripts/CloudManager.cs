@@ -9,7 +9,6 @@ public class CloudManager : MonoBehaviour
 	private Material cloudMaterial;
 
 	public Texture3D cloudTexture;
-	private Texture3D to_visualize;
 
 	[Range(1,200)]
 	public int lightSteps = 1;
@@ -27,19 +26,26 @@ public class CloudManager : MonoBehaviour
 	[Range(0, 1)]
 	public float densityThreshold = 0.0f;
 	[Range(0, 1)]
+	public float ci_densityThreshold = 0.0f;
+	[Range(0, 1)]
 	public float cw_densityThreshold = 0.0f;
 	[Range(0, 1)]
-	public float ci_densityThreshold = 0.0f;
+	public float qr_densityThreshold = 0.0f;
+	[Range(0, 1)]
+	public float pres_densityThreshold = 0.0f;
+
+	public bool showWind = false;
+	private VectorFieldVisualizer visualizer;
 
 	// initialize the material on startup (editor as well as game mode)
 	private void Start() { 
 		if(cloudMaterial == null) cloudMaterial = new Material(cloudShader);
 		cloudMaterial.SetTexture("CloudTexture", cloudTexture);
-
 		cloudMaterial.SetFloat("darknessThreshold", darknessThreshold);
 		cloudMaterial.SetFloat("densityThreshold", densityThreshold);
 		cloudMaterial.SetVector("phaseParameters", new Vector4(forwardScattering, backScattering, basicBrightness, phaseFactor));
 		cloudMaterial.SetInt("lightSteps", lightSteps);
+		VectorFieldVisualizer.enabled = showWind;
 	}
 	private void OnEnable() {
 		Shader cloudSh = Shader.Find("Unlit/CloudShader");
@@ -57,18 +63,49 @@ public class CloudManager : MonoBehaviour
 		switch (input)
 		{
 			case "1": 
-				cw_densityThreshold = 1.0f;
-				ci_densityThreshold = 0.0f;
-				break;
-			case "2":
 				ci_densityThreshold = 1.0f;
 				cw_densityThreshold = 0.0f;
+				qr_densityThreshold = 0.0f;
+				pres_densityThreshold = 0.0f;
+				showWind = false;
 				break;
-			case "3":  
+			case "2":
+				ci_densityThreshold = 0.0f;
+				cw_densityThreshold = 1.0f;
+				qr_densityThreshold = 0.0f;
+				pres_densityThreshold = 0.0f;
+				showWind = false;
+				break;
+			case "3":
+				ci_densityThreshold = 0.0f;
+				cw_densityThreshold = 0.0f;
+				qr_densityThreshold = 1.0f;
+				pres_densityThreshold = 0.0f;
+				showWind = false;
 				break;
 			case "4":
+				ci_densityThreshold = 0.0f;
+				cw_densityThreshold = 0.0f;
+				qr_densityThreshold = 0.0f;
+				pres_densityThreshold = 1.0f;
+				showWind = false;
 				break;
-			default: break;
+			case "5":
+				ci_densityThreshold = 0.0f;
+				cw_densityThreshold = 0.0f;
+				qr_densityThreshold = 0.0f;
+				pres_densityThreshold = 0.0f;
+				showWind = true;
+				break;
+			case "0":
+				ci_densityThreshold = 0.0f;
+				cw_densityThreshold = 0.0f;
+				qr_densityThreshold = 0.0f;
+				pres_densityThreshold = 0.0f;
+				showWind = false;
+				break;
+			default:
+				VectorFieldVisualizer.enabled = showWind; break;
 		} 
 	}
 
@@ -80,8 +117,10 @@ public class CloudManager : MonoBehaviour
 		cloudMaterial.SetFloat("densityThreshold", densityThreshold);
 		cloudMaterial.SetFloat("darknessThreshold", darknessThreshold);
 		cloudMaterial.SetFloat("densityThreshold", densityThreshold);
-		cloudMaterial.SetFloat("cw_densityThreshold", cw_densityThreshold);
 		cloudMaterial.SetFloat("ci_densityThreshold", ci_densityThreshold);
+		cloudMaterial.SetFloat("cw_densityThreshold", cw_densityThreshold);
+		cloudMaterial.SetFloat("qr_densityThreshold", qr_densityThreshold);
+		cloudMaterial.SetFloat("pres_densityThreshold", pres_densityThreshold);
 		cloudMaterial.SetVector("phaseParameters", new Vector4(forwardScattering, backScattering, basicBrightness, phaseFactor));
 		cloudMaterial.SetInt("lightSteps", lightSteps);
 		Graphics.Blit(source, destination, cloudMaterial);

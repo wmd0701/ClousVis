@@ -219,7 +219,7 @@ RectTransform:
   - {fileID: 73254924}
   - {fileID: 20337166}
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -506,50 +506,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 116543306}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!1 &124062364
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 124062367}
-  - component: {fileID: 124062365}
-  m_Layer: 0
-  m_Name: CloudVolume
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &124062365
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 124062364}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 769075f93b5d37c45a18858477a86847, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  showBoundaries: 1
---- !u!4 &124062367
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 124062364}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 100.915, z: 0}
-  m_LocalScale: {x: 7504, y: 198.17, z: 7781}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &538620571
 GameObject:
   m_ObjectHideFlags: 0
@@ -579,7 +535,7 @@ Transform:
   m_Children:
   - {fileID: 116543307}
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!218 &701091509 stripped
 Terrain:
@@ -796,13 +752,13 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b510084c4ac6d104aa019caf4846d20a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   cloudShader: {fileID: 4800000, guid: b93d27a9de7b0554b9ce9fe7ff0664c3, type: 3}
-  cloudTexture: {fileID: 11700000, guid: 58bdf76ecb2289c488400f22b4cbbbd8, type: 2}
+  cloudTexture: {fileID: 11700000, guid: e4ee79c864388664a9ca1861fce47625, type: 2}
   lightSteps: 20
   darknessThreshold: 0.428
   forwardScattering: 0.165
@@ -810,8 +766,11 @@ MonoBehaviour:
   basicBrightness: 1
   phaseFactor: 0.193
   densityThreshold: 0
-  cw_densityThreshold: 1
-  ci_densityThreshold: 1
+  ci_densityThreshold: 0
+  cw_densityThreshold: 0
+  qr_densityThreshold: 0
+  pres_densityThreshold: 0
+  showWind: 0
 --- !u!114 &963194231
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1203,7 +1162,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!1001 &1713853615
 PrefabInstance:
@@ -1212,10 +1171,15 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 5516478105329626552, guid: f02385e2d059ceb49910d5d3a09eb22d,
+        type: 3}
+      propertyPath: m_Size.y
+      value: 198.17
+      objectReference: {fileID: 0}
     - target: {fileID: 5516478105329626553, guid: f02385e2d059ceb49910d5d3a09eb22d,
         type: 3}
       propertyPath: m_RootOrder
-      value: 8
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 5516478105329626553, guid: f02385e2d059ceb49910d5d3a09eb22d,
         type: 3}
@@ -1514,7 +1478,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &4709506910997316286
 PrefabInstance:
@@ -1526,7 +1490,7 @@ PrefabInstance:
     - target: {fileID: 222064533325358163, guid: 8814ae9a1fb174e4e8ee7fb2381cb6f7,
         type: 3}
       propertyPath: m_RootOrder
-      value: 4
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 222064533325358163, guid: 8814ae9a1fb174e4e8ee7fb2381cb6f7,
         type: 3}
