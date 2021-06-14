@@ -39,6 +39,7 @@ public class CloudManager : MonoBehaviour
 
 	public enum Component{waterContent = 1, iceContent = 0, rainMixingRatio = 2, showAll = 3};
 	[Header("Isosurface Settings")]
+	public bool showIsosurface = false;
 
 	public Component shownComponent = Component.showAll;
 
@@ -60,6 +61,7 @@ public class CloudManager : MonoBehaviour
 		VisManager.shownComponent = (int)shownComponent;
 		VisManager.visTexture = cloudTexture;
 		VisManager.noiseTexture = noiseTexture;
+		VisManager.showIsosurface = showIsosurface;
 	}
 	private void OnEnable() {
 		Shader cloudSh = Shader.Find("Unlit/CloudShader");
@@ -73,6 +75,7 @@ public class CloudManager : MonoBehaviour
 		VisManager.shownComponent = (int)shownComponent;
 		VisManager.visTexture = cloudTexture;
 		VisManager.noiseTexture = noiseTexture;
+		VisManager.showIsosurface = showIsosurface;
 	}
 
 	private void Update()
@@ -92,13 +95,16 @@ public class CloudManager : MonoBehaviour
 			case "4":
 				showWind = !showWind;
 				break;
+			case "5":
+				showIsosurface = !showIsosurface;
+				break;
 			case "0":
 				ci_densityThreshold = 0.0f;
 				cw_densityThreshold = 0.0f;
 				qr_densityThreshold = 0.0f;
 				pres_densityThreshold = 0.0f;
 				showWind = false;
-				isovalue = 1.0f;
+				showIsosurface = false;
 				break;
 			default:
 				VectorFieldVisualizer.enabled = showWind;
@@ -135,5 +141,6 @@ public class CloudManager : MonoBehaviour
 		VisManager.shownComponent = (int)shownComponent;
 		VisManager.visTexture = cloudTexture;
 		VisManager.noiseTexture = noiseTexture;
+		VisManager.showIsosurface = showIsosurface;
 	}
 }

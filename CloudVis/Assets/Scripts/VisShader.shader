@@ -174,6 +174,10 @@ Shader "Unlit/VisShader"
 				float3 sample = {0.0f, 0.0f, 0.0f};
 				bool inIso = false;
 
+				if (!showIsosurface) {
+					return cloudColor;
+				}
+
 				switch(shownComponent)
 					{
 						case(0):	// CLI

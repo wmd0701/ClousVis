@@ -12,7 +12,7 @@ public class VisManager : MonoBehaviour
     public static Texture3D visTexture;
     public static Texture2D noiseTexture;
 
-    public static bool showIsolines = false;
+    public static bool showIsosurface = false;
 
 
     public static int shownComponent = 3;
@@ -26,7 +26,7 @@ public class VisManager : MonoBehaviour
     {
         if (visMaterial == null) visMaterial = new Material(visShader);
         visMaterial.SetTexture("VisTexture", visTexture);
-        visMaterial.SetInt("showIsosurface", Convert.ToInt32(showIsolines));
+        visMaterial.SetInt("showIsosurface", Convert.ToInt32(showIsosurface));
         visMaterial.SetFloat("isovalue", isovalue);
         visMaterial.SetInt("shownComponent", (int)shownComponent);
     }
@@ -35,7 +35,7 @@ public class VisManager : MonoBehaviour
         Shader cloudSh = Shader.Find("Unlit/VisShader");
         if (visMaterial == null) visMaterial = new Material(cloudSh);
         visMaterial.SetTexture("VisTexture", visTexture);
-        visMaterial.SetInt("showIsosurface", Convert.ToInt32(showIsolines));
+        visMaterial.SetInt("showIsosurface", Convert.ToInt32(showIsosurface));
         visMaterial.SetFloat("isovalue", isovalue);
         visMaterial.SetInt("shownComponent", (int)shownComponent);
     }
@@ -47,7 +47,7 @@ public class VisManager : MonoBehaviour
         if (visMaterial == null) visMaterial = new Material(visShader);
         visMaterial.SetTexture("VisTexture", visTexture);
         visMaterial.SetTexture("noiseTexture", noiseTexture);
-        visMaterial.SetInt("showIsosurface", Convert.ToInt32(showIsolines));
+        visMaterial.SetInt("showIsosurface", Convert.ToInt32(showIsosurface));
         visMaterial.SetFloat("isovalue", isovalue);
         visMaterial.SetInt("shownComponent", (int)shownComponent);
 
