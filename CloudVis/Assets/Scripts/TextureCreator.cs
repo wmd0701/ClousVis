@@ -9,15 +9,19 @@ public class TextureCreator : ScriptableObject
 	int sizeY = 150;
 	int sizeZ = 1556;
 
-	public TextureFormat format = TextureFormat.RFloat;
-	public TextureWrapMode wrapMode = TextureWrapMode.Clamp;
+	//public TextureFormat format = TextureFormat.RFloat;
+	//public TextureWrapMode wrapMode = TextureWrapMode.Clamp;
 
-	public string sourceName = "clouds";
-	public string TextureName = "clouds";
+	//public string sourceName = "clouds";
+	//public string TextureName = "clouds";
 
 	// This is an example function used to load some binary file and convert it to texture.
 	public void generateVectorfield()
 	{
+		string sourceName = "vectorfield";
+		string TextureName = "vectorfield";
+		TextureFormat format = TextureFormat.RGB24;
+		TextureWrapMode wrapMode = TextureWrapMode.Clamp;
 		Texture3D texture = new Texture3D(sizeX, sizeY, sizeZ, format, false);
 		texture.wrapMode = wrapMode;
 
@@ -69,6 +73,10 @@ public class TextureCreator : ScriptableObject
 
 	public void generateClouds()
 	{
+		string sourceName = "clouds";
+		string TextureName = "clouds";
+		TextureFormat format = TextureFormat.RGBA32;
+		TextureWrapMode wrapMode = TextureWrapMode.Clamp;
 		Texture3D texture = new Texture3D(sizeX, sizeY, sizeZ, format, false);
 		texture.wrapMode = wrapMode;
 
@@ -119,6 +127,9 @@ public class TextureCreator : ScriptableObject
 
 	public void generateNoise2D()
     {
+		string TextureName = "noise";
+		TextureFormat format = TextureFormat.RFloat;
+		TextureWrapMode wrapMode = TextureWrapMode.Repeat;
 		Texture2D texture = new Texture2D(512, 512, format, false); 
 		texture.wrapMode = wrapMode;
 
