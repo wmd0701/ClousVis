@@ -9,5 +9,6 @@ CloudVis/Assets/winds.asset
 CloudVis/Assets/ImportedData/*
 CloudVis/Temp/*
 CloudVis/Images/*
+*.sln
 
 CloudVis/.vs/*
