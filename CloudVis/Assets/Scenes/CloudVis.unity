@@ -647,7 +647,6 @@ MonoBehaviour:
   pres_densityThreshold: 0
   showWind: 0
   isovalue: 1
-  showIsolines: 1
   isovalueStep: 0.03
 --- !u!114 &963194231
 MonoBehaviour:
@@ -699,6 +698,8 @@ MonoBehaviour:
   material: {fileID: 2100000, guid: 941aa7cf93e294643a540f92890df050, type: 2}
   radius: 1
   template: {fileID: 11400000, guid: 95a70bb9fbb33ba4b87fca583701f71b, type: 2}
+  FRMeasureInterval: 0
+  frameRate: 0
 --- !u!114 &963194232
 MonoBehaviour:
   m_ObjectHideFlags: 0

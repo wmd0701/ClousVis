@@ -13,15 +13,15 @@ public class ControllHint : MonoBehaviour
     {
         ControllHintText = GetComponent<Text>();
         hintContent = "Camera Movement: \n" +
-                        "   wasd/D-pad: basic movement\n" +
-                        "   q/e: up/downward\n" +
-                        "   ctrl/shift/mouse left: speed up\n\n" +
+                        "   wasd/D-pad: basic movement \n" +
+                        "   q/e: up/downward \n" +
+                        "   ctrl/shift/mouse left: speed up \n" +
+                        "   j/k: decrease/increase isoavlue \n\n" + 
                         "Toggle view: \n" +
-                        "   1: Specific Cloud Ice Content\n" +
-                        "   2: Specific Cloud Water Content\n" +
-                        "   3: Rain Mixing Ratio\n" +
-                        "   4: Isosurfaces (j/k: -/+isovalue)\n" +
-                        "   5: Wind (vector field)\n" +
+                        "   1: Specific Cloud Ice Content \n" +
+                        "   2: Specific Cloud Water Content \n" +
+                        "   3: Rain Mixing Ratio \n" +
+                        "   4: Wind (vector field) \n" +
                         "   0: Nothing";
     }
 

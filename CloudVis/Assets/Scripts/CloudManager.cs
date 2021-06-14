@@ -39,7 +39,6 @@ public class CloudManager : MonoBehaviour
 
 	[Range(0, 1)]
 	public float isovalue = 1.0f;
-	public bool showIsolines = false;
 	public float isovalueStep = 0.03f;
 
 	// initialize the material on startup (editor as well as game mode)
@@ -52,7 +51,6 @@ public class CloudManager : MonoBehaviour
 		cloudMaterial.SetInt("lightSteps", lightSteps);
 		VectorFieldVisualizer.enabled = showWind;
 		VisManager.isovalue = isovalue;
-		VisManager.showIsolines = showIsolines;
 	}
 	private void OnEnable() {
 		Shader cloudSh = Shader.Find("Unlit/CloudShader");
@@ -69,50 +67,17 @@ public class CloudManager : MonoBehaviour
 		var input = Input.inputString;
 		switch (input)
 		{
-			case "1": 
-				ci_densityThreshold = 1.0f;
-				cw_densityThreshold = 0.0f;
-				qr_densityThreshold = 0.0f;
-				pres_densityThreshold = 0.0f;
-				showWind = false;
-				isovalue = 1.0f;
-				showIsolines = false;
+			case "1":
+				ci_densityThreshold = 1.0f - ci_densityThreshold;
 				break;
 			case "2":
-				ci_densityThreshold = 0.0f;
-				cw_densityThreshold = 1.0f;
-				qr_densityThreshold = 0.0f;
-				pres_densityThreshold = 0.0f;
-				showWind = false;
-				isovalue = 1.0f;
-				showIsolines = false;
+				cw_densityThreshold = 1.0f - cw_densityThreshold;
 				break;
 			case "3":
-				ci_densityThreshold = 0.0f;
-				cw_densityThreshold = 0.0f;
-				qr_densityThreshold = 1.0f;
-				pres_densityThreshold = 0.0f;
-				showWind = false;
-				isovalue = 1.0f;
-				showIsolines = false;
+				qr_densityThreshold = 1.0f - qr_densityThreshold;
 				break;
 			case "4":
-				ci_densityThreshold = 0.0f;
-				cw_densityThreshold = 0.0f;
-				qr_densityThreshold = 0.0f;
-				pres_densityThreshold = 0.0f;
-				showWind = false;
-				isovalue = 0.9f;
-				showIsolines = true;
-				break;
-			case "5":
-				ci_densityThreshold = 0.0f;
-				cw_densityThreshold = 0.0f;
-				qr_densityThreshold = 0.0f;
-				pres_densityThreshold = 0.0f;
-				showWind = true;
-				isovalue = 1.0f;
-				showIsolines = false;
+				showWind = !showWind;
 				break;
 			case "0":
 				ci_densityThreshold = 0.0f;
@@ -121,25 +86,20 @@ public class CloudManager : MonoBehaviour
 				pres_densityThreshold = 0.0f;
 				showWind = false;
 				isovalue = 1.0f;
-				showIsolines = false;
 				break;
 			default:
 				VectorFieldVisualizer.enabled = showWind;
-				VisManager.isovalue = isovalue;
-				VisManager.showIsolines = showIsolines;
 				break;
 		}
 
-		if (showIsolines) 
-		{
-			if (Input.GetKey("j"))
-				isovalue -= isovalueStep;
-			if (Input.GetKey("k"))
-				isovalue += isovalueStep;
+		
+		if (Input.GetKey("j"))
+			isovalue -= isovalueStep;
+		if (Input.GetKey("k"))
+			isovalue += isovalueStep;
 
-			isovalue = Mathf.Clamp(isovalue, 0.0f, 1.0f);
-			VisManager.isovalue = isovalue;
-		}
+		isovalue = Mathf.Clamp(isovalue, 0.0f, 1.0f);
+		VisManager.isovalue = isovalue;
 	}
 
     [ImageEffectOpaque] // is applied after rendering all opaque elements, but before transparent ones.
