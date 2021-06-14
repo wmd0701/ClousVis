@@ -4,5 +4,5 @@ PROJECT(VTKScripts)
 
 find_package(VTK REQUIRED)
 
-add_subdirectory(cloudDataCombined)
-add_subdirectory(vectorfield)
+add_subdirectory(combineCloudData)
+add_subdirectory(createVectorfield)
