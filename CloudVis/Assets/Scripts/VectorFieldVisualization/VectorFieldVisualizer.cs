@@ -17,7 +17,7 @@ public class VectorFieldVisualizer : MonoBehaviour {
     public Material material;                   // Material of the tubes.
     public float radius;                        // Radius of the tubes.
     public TubeTemplate template;               // Template mesh for tubes.
-    public float FRMeasureInterval;             // Interval in which framerate is measured.
+    public float FRMeasureInterval = 60.0f;     // Interval in which framerate is measured.
     public static bool enabled = true;                 // Whether show tubes or not.
     public float frameRate;                     // Kinda hacky way to display framerate without logging it.
 

@@ -5,6 +5,10 @@ CloudVis/UserSettings/
 
 CloudVis/Assets/clw_normalized.asset
 CloudVis/Assets/clouds.asset
+CloudVis/Assets/cloudTexture.asset
+CloudVis/Assets/noiseTexture.asset
+CloudVis/Assets/cloudTexture.asset.meta
+CloudVis/Assets/noiseTexture.asset.meta
 CloudVis/Assets/winds.asset
 CloudVis/Assets/ImportedData/*
 CloudVis/Temp/*

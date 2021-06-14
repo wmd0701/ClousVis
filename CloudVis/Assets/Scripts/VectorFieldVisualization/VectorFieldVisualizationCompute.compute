@@ -28,7 +28,7 @@ RWStructuredBuffer<float> maxLengthBuffer;      // Buffer holding maximal segmen
 RWStructuredBuffer<float> minLengthBuffer;      // Buffer holding minimal segment-lengths among all segments per streamline.
 
 // Texture holding the vectorfield.
-Texture3D<float4> vectorfieldTexture;
+Texture3D<float3> vectorfieldTexture;
 SamplerState sampler_vectorfieldTexture;
 SamplerState my_trilinear_repeat_sampler;
 
@@ -41,7 +41,7 @@ float minLen;
 float maxLen;
 float4 volumeBoundaryMin;
 
-float3 Decode(float4 encoding) {
+float3 Decode(float3 encoding) {
 
     // The actual decoding.
     float U = encoding.r * (maxU - minU) + minU;
@@ -51,7 +51,7 @@ float3 Decode(float4 encoding) {
     return float3(U, V, W);
 }
 
-float4 SampleVectorField(float3 position) {
+float3 SampleVectorField(float3 position) {
 
     // Subtract volumeBoundaryMin for indexing.
     position -= volumeBoundaryMin.xyz;

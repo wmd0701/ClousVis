@@ -361,7 +361,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8720de9459c23d44e8ae210521010e94, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  displacement: 10
+  displacement: 1
   gradient:
     serializedVersion: 2
     key0: {r: 0.0031506082, g: 0.06396957, b: 0.5566038, a: 1}
@@ -399,6 +399,8 @@ MonoBehaviour:
   material: {fileID: 2100000, guid: 941aa7cf93e294643a540f92890df050, type: 2}
   radius: 5
   template: {fileID: 11400000, guid: 95a70bb9fbb33ba4b87fca583701f71b, type: 2}
+  FRMeasureInterval: 30
+  frameRate: 0
 --- !u!114 &1454668984
 MonoBehaviour:
   m_ObjectHideFlags: 0
