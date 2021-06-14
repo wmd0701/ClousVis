@@ -33,5 +33,5 @@ While the previously described computation would suffice to render simple stream
 To enhance the depth perception of the streamlines, they are rendered with a metallic look which creates easily distinguishable specular highlights. Furthermore, the tube geometry supports self-shadowing, which can provide further depth-cues to the viewer. A transfer function of the particle velocity is used for the base color of the tube. The following image qualitatively compares the visual appearance of the streamtubes with varying amounts of depth-cues:
 ![The material choice and shadowing can aid the viewers depth perception. Left: Simple diffuse shader. Middle: Specular highlights. Right: With self-shadowing.](https://github.com/danielettog/CloudVis/blob/main/CloudVis/Assets/Scripts/VectorFieldVisualization/depthcues.jpg)
 
-##Performance Comparison
+## Performance Comparison
 To highlight the fact that a GPU-based implementation was required to execute the described computation at interactive frame-rates, the following figure shows a frame-rate comparisones of a purely CPU-based and GPU-based approach for varying number of integration steps.
