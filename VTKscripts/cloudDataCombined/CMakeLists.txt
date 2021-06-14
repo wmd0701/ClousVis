@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.8...3.12 FATAL_ERROR)
  
-PROJECT(TransformData)
+PROJECT(cloudDataCombined)
 
 find_package(VTK REQUIRED)
 
