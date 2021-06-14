@@ -22,6 +22,7 @@ public class ControllHint : MonoBehaviour
                         "   2: Specific Cloud Water Content \n" +
                         "   3: Rain Mixing Ratio \n" +
                         "   4: Wind (vector field) \n" +
+                        "   5: Isosurface \n" +
                         "   0: Nothing";
     }
 

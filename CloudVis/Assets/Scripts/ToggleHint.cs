@@ -11,6 +11,7 @@ public class ToggleHint : MonoBehaviour
     private bool clw_on = false;
     private bool qr_on =  false;
     private bool vec_on = false;
+    private bool iso_on = false;
 
     // Start is called before the first frame update
     void Start()
@@ -30,7 +31,8 @@ public class ToggleHint : MonoBehaviour
             case "2": updateText = true; clw_on = !clw_on; ToggleHintText.text = "Specific Cloud Water Content: " + getText(clw_on); break;
             case "3": updateText = true; qr_on  = !qr_on ; ToggleHintText.text = "Rain Mixing Ratio: " + getText(qr_on); break;
             case "4": updateText = true; vec_on = !vec_on; ToggleHintText.text = "Wind (vector field): " + getText(vec_on); break;
-            case "0": updateText = true; ToggleHintText.text = "Current view: Nothing"; break;
+            case "5": updateText = true; iso_on = !iso_on; ToggleHintText.text = "Isosurface: " + getText(iso_on); break;
+            case "0": updateText = true; cli_on = false; clw_on = false; qr_on = false; vec_on = false; iso_on = false; ToggleHintText.text = "Current view: Nothing"; break;
             default: updateText = false; break;
         }
 
