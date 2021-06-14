@@ -17,6 +17,9 @@ public class VectorFieldVisualizer : MonoBehaviour {
     public Material material;                   // Material of the tubes.
     public float radius;                        // Radius of the tubes.
     public TubeTemplate template;               // Template mesh for tubes.
+    public float FRMeasureInterval;             // Interval in which framerate is measured.
+    public static bool enabled = true;                 // Whether show tubes or not.
+    public float frameRate;                     // Kinda hacky way to display framerate without logging it.
 
     private Slicer slicer;                      // Slicer instance to get slice plane.
     private float maxStepDist;                  // Maximal distance between two streamline-points (used for coloring).
@@ -36,8 +39,9 @@ public class VectorFieldVisualizer : MonoBehaviour {
     private int groupSize = 64;                 // Number of threads run in a single group.
     private int groupCount;                     // Number of groups requires to calculate <maxStreamlineCount> streamlines.
     private Vector3 volumeBoundaryMin;          // Minimal point of volume-boundary.
-    private bool materialIsCloned;              // Whether material is cloned.
-    public static bool enabled;                 // Whether show tubes or not
+    private float lastSample;                   // Last time a sample was taken.
+    private int frames;                         // How many frames were counted since the last sample.
+    
 
 
     // Precomputation of the shader properties.
@@ -102,7 +106,6 @@ public class VectorFieldVisualizer : MonoBehaviour {
         // Clone material (TODO: Find out why).
         material = new Material(material);
         material.name += "_cloned";
-        materialIsCloned = true;
         ExtractGradientColors();
     }
 
@@ -168,7 +171,7 @@ public class VectorFieldVisualizer : MonoBehaviour {
         InitializeIterator(streamlineCount);
 
         // Get data after GPU-calculation.
-        // streamlineBuffer.GetData(streamlinePoints);
+        streamlineBuffer.GetData(streamlinePoints);
 
         // Draw streamlines for debugging.
         /*
@@ -177,7 +180,6 @@ public class VectorFieldVisualizer : MonoBehaviour {
                              maxStreamlineCount, 
                              streamlineCount);
         */
-
         // Reconstruct streamlines.
         InitializeReconstructor();
 
@@ -215,7 +217,7 @@ public class VectorFieldVisualizer : MonoBehaviour {
                                                bufferWithArgs:drawArgsBuffer,
                                                argsOffset:0,
                                                properties:props);
-
+        measureFrameRate();
     }
 
     /**
@@ -417,6 +419,16 @@ public class VectorFieldVisualizer : MonoBehaviour {
         material.SetBuffer(_NormalBufferId, normalBuffer);
         material.SetBuffer(_SegmentLengthBufferId, segmentLengthBuffer);
         material.SetVector(_VolumeBoundaryMinId, volumeBoundaryMin);
+    }
+
+    void measureFrameRate() {
+        if (lastSample + FRMeasureInterval < Time.realtimeSinceStartup) {
+            frameRate = (float) frames / (Time.realtimeSinceStartup - lastSample);
+            frames = 0;
+            lastSample = Time.realtimeSinceStartup;
+        } else {
+            frames++;
+        }
     }
 
 }

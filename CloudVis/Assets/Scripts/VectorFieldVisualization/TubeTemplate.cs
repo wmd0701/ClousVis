@@ -96,12 +96,6 @@ public sealed class TubeTemplate : ScriptableObject {
             idxs.Add(refi);
             idxs.Add(refi + _divisionCount);
 
-            for (int i = 0; i < idxs.Count; i++) {
-                if (idxs[i] > 6152) {
-                    Debug.Log(idxs[i]);
-                }
-            }
-
             // Building mesh.
             _mesh.Clear();
             _mesh.SetVertices(verts);
