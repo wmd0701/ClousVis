@@ -16,7 +16,8 @@ public class ControllHint : MonoBehaviour
                         "   wasd/D-pad: basic movement \n" +
                         "   q/e: up/downward \n" +
                         "   ctrl/shift/mouse left: speed up \n" +
-                        "   j/k: decrease/increase isoavlue \n\n" + 
+                        "   j/k: decrease/increase isoavlue \n" + 
+                        "   m: change isosurface data \n\n" + 
                         "Toggle view: \n" +
                         "   1: Specific Cloud Ice Content \n" +
                         "   2: Specific Cloud Water Content \n" +

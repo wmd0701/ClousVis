@@ -116,6 +116,8 @@ public class CloudManager : MonoBehaviour
 			isovalue -= isovalueStep;
 		if (Input.GetKey("k"))
 			isovalue += isovalueStep;
+		if (Input.GetKey("m"))
+			shownComponent = (Component)(((int)shownComponent + 1) % 4);
 
 		isovalue = Mathf.Clamp(isovalue, 0.0f, 1.0f);
 		VisManager.isovalue = isovalue;
