@@ -6,20 +6,19 @@ using UnityEngine;
 [ExecuteInEditMode, ImageEffectAllowedInSceneView]
 public class VisManager : MonoBehaviour
 {
-    public Shader visShader; // clouds are a post-process shader
+    public static Shader visShader; // clouds are a post-process shader
     private Material visMaterial;
 
-    public Texture3D visTexture;
-    public Texture2D noiseTexture;
+    public static Texture3D visTexture;
+    public static Texture2D noiseTexture;
 
     public static bool showIsolines = false;
 
-    public enum Component{waterContent = 1, iceContent = 0, rainMixingRatio = 2, showAll = 3};
 
-    public Component shownComponent = Component.showAll;
+    public static int shownComponent = 3;
 
     [Range(0, 1)]
-    public static float isovalue = 1.0f;
+    public static float isovalue = 0.3f;
 
 
     // initialize the material on startup (editor as well as game mode)

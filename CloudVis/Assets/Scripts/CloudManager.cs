@@ -37,8 +37,14 @@ public class CloudManager : MonoBehaviour
 
 	public bool showWind = false;
 
+	public enum Component{waterContent = 1, iceContent = 0, rainMixingRatio = 2, showAll = 3};
+	[Header("Isosurface Settings")]
+
+	public Component shownComponent = Component.showAll;
+
+
 	[Range(0, 1)]
-	public float isovalue = 1.0f;
+	public float isovalue = 0.3f;
 	public float isovalueStep = 0.03f;
 
 	// initialize the material on startup (editor as well as game mode)
@@ -51,6 +57,9 @@ public class CloudManager : MonoBehaviour
 		cloudMaterial.SetInt("lightSteps", lightSteps);
 		VectorFieldVisualizer.enabled = showWind;
 		VisManager.isovalue = isovalue;
+		VisManager.shownComponent = (int)shownComponent;
+		VisManager.visTexture = cloudTexture;
+		VisManager.noiseTexture = noiseTexture;
 	}
 	private void OnEnable() {
 		Shader cloudSh = Shader.Find("Unlit/CloudShader");
@@ -60,6 +69,10 @@ public class CloudManager : MonoBehaviour
 		cloudMaterial.SetFloat("darknessThreshold", darknessThreshold);
 		cloudMaterial.SetVector("phaseParameters", new Vector4(forwardScattering, backScattering, basicBrightness, phaseFactor));
 		cloudMaterial.SetInt("lightSteps", lightSteps);
+		VisManager.isovalue = isovalue;
+		VisManager.shownComponent = (int)shownComponent;
+		VisManager.visTexture = cloudTexture;
+		VisManager.noiseTexture = noiseTexture;
 	}
 
 	private void Update()
@@ -118,5 +131,9 @@ public class CloudManager : MonoBehaviour
 		cloudMaterial.SetVector("phaseParameters", new Vector4(forwardScattering, backScattering, basicBrightness, phaseFactor));
 		cloudMaterial.SetInt("lightSteps", lightSteps);
 		Graphics.Blit(source, destination, cloudMaterial);
+		VisManager.isovalue = isovalue;
+		VisManager.shownComponent = (int)shownComponent;
+		VisManager.visTexture = cloudTexture;
+		VisManager.noiseTexture = noiseTexture;
 	}
 }
