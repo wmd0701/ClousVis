@@ -12,11 +12,15 @@ The data comes from [SciVis Contest 2017](https://www.dkrz.de/SciVis) and it is 
 
 As it takes some time to reproduce the visualization on Unity3D, it may help to have a look at the videos below. The vidoes are also included in './videos'.
 
-Cameara Movement
-[<img src="https://img.youtube.com/vi/lHCqkv5Q1u4/maxresdefault.jpg" width="50%">](https://youtu.be/lHCqkv5Q1u4)
+[Cameara Movement](https://youtu.be/lHCqkv5Q1u4)
 
-Tutorial
-[<img src="https://img.youtube.com/vi/_4Mhmr9IhKw/maxresdefault.jpg" width="50%">](https://youtu.be/_4Mhmr9IhKw)
+
+[<img src="https://img.youtube.com/vi/lHCqkv5Q1u4/maxresdefault.jpg" width="60%">](https://youtu.be/lHCqkv5Q1u4)
+
+[Tutorial](https://youtu.be/_4Mhmr9IhKw)
+
+
+[<img src="https://img.youtube.com/vi/_4Mhmr9IhKw/maxresdefault.jpg" width="60%">](https://youtu.be/_4Mhmr9IhKw)
 
 
 
