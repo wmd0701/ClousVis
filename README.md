@@ -10,12 +10,13 @@ The data comes from [SciVis Contest 2017](https://www.dkrz.de/SciVis) and it is 
 
 ## Tips
 
-As it takes some time to reproduce the visualization on Unity3D, it may help to have a look at the videos below.
+As it takes some time to reproduce the visualization on Unity3D, it may help to have a look at the videos below. The vidoes are also included in './videos'.
 
-[![Camera Movement](https://img.youtube.com/vi/lHCqkv5Q1u4/maxresdefault.jpg)](https://youtu.be/lHCqkv5Q1u4)
+Cameara Movement
+[<img src="https://img.youtube.com/vi/lHCqkv5Q1u4/maxresdefault.jpg" width="50%">](https://youtu.be/lHCqkv5Q1u4)
 
-[![Tutorial](https://img.youtube.com/vi/_4Mhmr9IhKw/maxresdefault.jpg)](https://youtu.be/_4Mhmr9IhKw)
-
+Tutorial
+[<img src="https://img.youtube.com/vi/_4Mhmr9IhKw/maxresdefault.jpg" width="50%">](https://youtu.be/_4Mhmr9IhKw)
 
 
 
